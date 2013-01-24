@@ -65,11 +65,14 @@ public class ServiceOfferingVO extends DiskOfferingVO implements ServiceOffering
     @Column(name="sort_key")
     int sortKey;
     
+    @Column(name="is_dedicated")
+    boolean isDedicated;
+    
     protected ServiceOfferingVO() {
         super();
     }
 
-    public ServiceOfferingVO(String name, int cpu, int ramSize, int speed, Integer rateMbps, Integer multicastRateMbps, boolean offerHA, String displayText, boolean useLocalStorage, boolean recreatable, String tags, boolean systemUse, VirtualMachine.Type vm_type, boolean defaultUse) {
+    public ServiceOfferingVO(String name, int cpu, int ramSize, int speed, Integer rateMbps, Integer multicastRateMbps, boolean offerHA, boolean isDedicated, String displayText, boolean useLocalStorage, boolean recreatable, String tags, boolean systemUse, VirtualMachine.Type vm_type, boolean defaultUse) {
         super(name, displayText, false, tags, recreatable, useLocalStorage, systemUse, true);
         this.cpu = cpu;
         this.ramSize = ramSize;
@@ -80,9 +83,10 @@ public class ServiceOfferingVO extends DiskOfferingVO implements ServiceOffering
         this.limitCpuUse = false; 
         this.default_use = defaultUse;
         this.vm_type = vm_type == null ? null : vm_type.toString().toLowerCase();
+        this.isDedicated = isDedicated;
     }
 
-    public ServiceOfferingVO(String name, int cpu, int ramSize, int speed, Integer rateMbps, Integer multicastRateMbps, boolean offerHA, boolean limitCpuUse, String displayText, boolean useLocalStorage, boolean recreatable, String tags, boolean systemUse, VirtualMachine.Type vm_type, Long domainId) {
+    public ServiceOfferingVO(String name, int cpu, int ramSize, int speed, Integer rateMbps, Integer multicastRateMbps, boolean offerHA, boolean isDedicated, boolean limitCpuUse, String displayText, boolean useLocalStorage, boolean recreatable, String tags, boolean systemUse, VirtualMachine.Type vm_type, Long domainId) {
         super(name, displayText, false, tags, recreatable, useLocalStorage, systemUse, true, domainId);
         this.cpu = cpu;
         this.ramSize = ramSize;
@@ -92,10 +96,11 @@ public class ServiceOfferingVO extends DiskOfferingVO implements ServiceOffering
         this.offerHA = offerHA;
         this.limitCpuUse = limitCpuUse;  
         this.vm_type = vm_type == null ? null : vm_type.toString().toLowerCase();
+        this.isDedicated = isDedicated;
     }
 
-    public ServiceOfferingVO(String name, int cpu, int ramSize, int speed, Integer rateMbps, Integer multicastRateMbps, boolean offerHA, boolean limitResourceUse, String displayText, boolean useLocalStorage, boolean recreatable, String tags, boolean systemUse, VirtualMachine.Type vm_type, Long domainId, String hostTag) {
-        this(name, cpu, ramSize, speed, rateMbps, multicastRateMbps, offerHA, limitResourceUse, displayText, useLocalStorage, recreatable, tags, systemUse, vm_type, domainId);
+    public ServiceOfferingVO(String name, int cpu, int ramSize, int speed, Integer rateMbps, Integer multicastRateMbps, boolean offerHA, boolean isDedicated, boolean limitResourceUse, String displayText, boolean useLocalStorage, boolean recreatable, String tags, boolean systemUse, VirtualMachine.Type vm_type, Long domainId, String hostTag) {
+        this(name, cpu, ramSize, speed, rateMbps, multicastRateMbps, offerHA, isDedicated, limitResourceUse, displayText, useLocalStorage, recreatable, tags, systemUse, vm_type, domainId);
         this.hostTag = hostTag;
     }    
 
@@ -198,4 +203,12 @@ public class ServiceOfferingVO extends DiskOfferingVO implements ServiceOffering
     	return sortKey;
     }
 	
+	public boolean getIsDedicated() {
+	    return isDedicated;
+	}
+	
+	public void setIsDedicated(boolean isDedicated) {
+		this.isDedicated = isDedicated;
+	}
+
 }

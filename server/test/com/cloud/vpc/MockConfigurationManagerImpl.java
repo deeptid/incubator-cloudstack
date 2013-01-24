@@ -418,7 +418,7 @@ public class MockConfigurationManagerImpl implements ConfigurationManager, Confi
      */
     @Override
     public ServiceOfferingVO createServiceOffering(long userId, boolean isSystem, Type vm_typeType, String name, int cpu, int ramSize, int speed, String displayText, boolean localStorageRequired, boolean offerHA,
-            boolean limitResourceUse, String tags, Long domainId, String hostTag, Integer networkRate) {
+            boolean limitResourceUse, String tags, Long domainId, String hostTag, Integer networkRate, boolean isDedicated) {
         // TODO Auto-generated method stub
         return null;
     }

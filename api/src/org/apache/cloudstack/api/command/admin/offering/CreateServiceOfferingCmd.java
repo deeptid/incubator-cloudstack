@@ -80,6 +80,9 @@ public class CreateServiceOfferingCmd extends BaseCmd {
 
     @Parameter(name=ApiConstants.NETWORKRATE, type=CommandType.INTEGER, description="data transfer rate in megabits per second allowed. Supported only for non-System offering and system offerings having \"domainrouter\" systemvmtype")
     private Integer networkRate;
+    
+    @Parameter(name=ApiConstants.IS_DEDICATED, type=CommandType.BOOLEAN, description="is dedication required")
+    private Boolean isdedicated;
 
     /////////////////////////////////////////////////////
     /////////////////// Accessors ///////////////////////
@@ -132,7 +135,11 @@ public class CreateServiceOfferingCmd extends BaseCmd {
     public Boolean getIsSystem() {
         return  isSystem == null ? false : isSystem;
     }
-
+    
+    public Boolean getIsDedicated() {
+        return  isSystem == null ? false : isSystem;
+    }
+    
     public String getSystemVmType() {
         return systemVmType;
     }
