@@ -28,7 +28,9 @@ import javax.naming.ConfigurationException;
 
 import com.cloud.dc.ClusterDetailsDao;
 import com.cloud.dc.ClusterDetailsVO;
+import com.cloud.dc.DedicatedResourceVO;
 import com.cloud.dc.dao.ClusterDao;
+import com.cloud.dc.dao.DedicatedResourceDao;
 import com.cloud.org.Cluster;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
@@ -84,6 +86,7 @@ public class FirstFitAllocator extends AdapterBase implements HostAllocator {
     @Inject ResourceManager _resourceMgr;
     @Inject ClusterDao _clusterDao;
     @Inject ClusterDetailsDao _clusterDetailsDao;
+    @Inject DedicatedResourceDao _dedicatedDao;
     float _factor = 1;
     boolean _checkHvm = true;
     protected String _allocationAlgorithm = "random";
@@ -105,6 +108,8 @@ public class FirstFitAllocator extends AdapterBase implements HostAllocator {
 		ServiceOffering offering = vmProfile.getServiceOffering();
 		VMTemplateVO template = (VMTemplateVO)vmProfile.getTemplate();
 		Account account = vmProfile.getOwner();
+		VirtualMachine vm = vmProfile.getVirtualMachine();
+		boolean useDedication = vm.getUseDedication();
 
         if (type == Host.Type.Storage) {
             // FirstFitAllocator should be used for user VMs only since it won't care whether the host is capable of routing or not
@@ -169,10 +174,10 @@ public class FirstFitAllocator extends AdapterBase implements HostAllocator {
             }
         }
         
-        return allocateTo(plan, offering, template, avoid, clusterHosts, returnUpTo, considerReservedCapacity, account);
+        return allocateTo(plan, offering, template, avoid, clusterHosts, returnUpTo, considerReservedCapacity, account, useDedication);
     }
 
-    protected List<Host> allocateTo(DeploymentPlan plan, ServiceOffering offering, VMTemplateVO template, ExcludeList avoid, List<HostVO> hosts, int returnUpTo, boolean considerReservedCapacity, Account account) {
+    protected List<Host> allocateTo(DeploymentPlan plan, ServiceOffering offering, VMTemplateVO template, ExcludeList avoid, List<HostVO> hosts, int returnUpTo, boolean considerReservedCapacity, Account account, boolean useDedication) {
         if (_allocationAlgorithm.equals("random") || _allocationAlgorithm.equals("userconcentratedpod_random")) {
         	// Shuffle this so that we don't check the hosts in the same order.
             Collections.shuffle(hosts);
@@ -208,7 +213,6 @@ public class FirstFitAllocator extends AdapterBase implements HostAllocator {
                 }
                 continue;
             }
-                        
             //find number of guest VMs occupying capacity on this host.
             if (_capacityMgr.checkIfHostReachMaxGuestLimit(host)){
                 if (s_logger.isDebugEnabled()) {
@@ -230,22 +234,105 @@ public class FirstFitAllocator extends AdapterBase implements HostAllocator {
             boolean hostHasCapacity = _capacityMgr.checkIfHostHasCapacity(host.getId(), cpu_requested, ram_requested, false,cpuOvercommitRatio,memoryOvercommitRatio, considerReservedCapacity);
 
             if (numCpusGood && cpuFreqGood && hostHasCapacity) {
-                if (s_logger.isDebugEnabled()) {
-                    s_logger.debug("Found a suitable host, adding to list: " + host.getId());
+                if(!offering.getImplicitDedication() && !useDedication && !checkIfHostIsDedicated(host))
+                {
+                    if (s_logger.isDebugEnabled()) {
+                        s_logger.debug("Found a suitable host, adding to list: " + host.getId());
+                    }
+                    suitableHosts.add(host);
+                } else if (offering.getImplicitDedication()) {
+                    if(checkForImplicitDedication(host, account)) {
+                        suitableHosts.add(host);
+                    }
+                    
+                } else if (useDedication) {
+                    if (checkForExplicitDedication(host, account)) {
+                        suitableHosts.add(host);
+                    }
+                } else {
+                    if (s_logger.isDebugEnabled()) {
+                        s_logger.debug("Not using this host:  " + host.getId()); 
+                    }
                 }
-                suitableHosts.add(host);
+
             } else {
                 if (s_logger.isDebugEnabled()) {
                     s_logger.debug("Not using host " + host.getId() + "; numCpusGood: " + numCpusGood + "; cpuFreqGood: " + cpuFreqGood + ", host has capacity?" + hostHasCapacity);
                 }
             }
         }
-        
+
         if (s_logger.isDebugEnabled()) {
             s_logger.debug("Host Allocator returning "+suitableHosts.size() +" suitable hosts");
         }
-        
+
         return suitableHosts;
+    }
+
+    private boolean checkForExplicitDedication(HostVO host, Account account) {
+        long hostId = host.getId();
+        DedicatedResourceVO dedicatedHost = _dedicatedDao.findByHostId(hostId);
+        DedicatedResourceVO dedicatedClusterOfHost = _dedicatedDao.findByClusterId(host.getClusterId());
+        DedicatedResourceVO dedicatedPodOfHost = _dedicatedDao.findByPodId(host.getPodId());
+        boolean suitable = false;
+        if (checkIfHostIsDedicated(host)) {
+            boolean implicit = dedicatedHost.getImplicitDedication();
+            Long accountIdOfDedicatedHost = dedicatedHost.getAccountId(); 
+            if (!implicit) {
+              //check if host is dedicated to a domain
+                if (accountIdOfDedicatedHost == null) {
+                    //check if host is dedicated to a domain
+                    if (dedicatedHost.getDomainId() != null && dedicatedHost.getDomainId() == account.getDomainId()) {
+                        suitable =  true;
+                    }
+                } else {
+                    if (dedicatedHost.getAccountId() == account.getId() || dedicatedClusterOfHost.getAccountId() == account.getId() || 
+                            dedicatedPodOfHost.getAccountId() == account.getId() ) {
+                        suitable = true;
+                    }
+                }
+            } 
+        } 
+        return suitable;
+    }
+
+    private boolean checkForImplicitDedication(HostVO host, Account account) {
+        long hostId = host.getId();
+        DedicatedResourceVO dedicatedHost = _dedicatedDao.findByHostId(hostId);
+        DedicatedResourceVO dedicatedClusterOfHost = _dedicatedDao.findByClusterId(host.getClusterId());
+        DedicatedResourceVO dedicatedPodOfHost = _dedicatedDao.findByPodId(host.getPodId());
+        boolean suitable = false;
+        if (checkIfHostIsDedicated(host)) {
+            boolean implicit = dedicatedHost.getImplicitDedication();
+            boolean implicitCluster = dedicatedClusterOfHost.getImplicitDedication();
+            boolean implicitPod = dedicatedPodOfHost.getImplicitDedication();
+            if (implicit || implicitCluster || implicitPod) {
+                boolean dedicatedVms = _vmInstanceDao.checkIfHosthasDedicatedVms(hostId, account.getId());
+                boolean isHostEmpty = _vmInstanceDao.checkIfHostIsEmpty(hostId);
+                if (dedicatedVms || isHostEmpty) {
+                    suitable = true;
+                }
+            }
+        }
+        return suitable;
+    }
+
+    private boolean checkIfHostIsDedicated(HostVO host) {
+        long hostId = host.getId();
+        DedicatedResourceVO dedicatedHost = _dedicatedDao.findByHostId(hostId);
+        DedicatedResourceVO dedicatedClusterOfHost = _dedicatedDao.findByClusterId(host.getClusterId());
+        DedicatedResourceVO dedicatedPodOfHost = _dedicatedDao.findByPodId(host.getPodId());
+        if (dedicatedHost != null || dedicatedClusterOfHost != null || dedicatedPodOfHost != null) {
+            if (s_logger.isDebugEnabled()) {
+                s_logger.debug("Host is dedicated, hostId: " + host.getId());
+            }
+            return true;
+        }else {
+            if (s_logger.isDebugEnabled()) {
+                s_logger.debug("Host is not dedicated, hostId: " + host.getId());
+            }
+            return false;
+        }
     }
 
     private List<HostVO> reorderHostsByNumberOfVms(DeploymentPlan plan, List<HostVO> hosts, Account account) {

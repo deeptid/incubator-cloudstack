@@ -145,6 +145,7 @@ under the License.
             <adapter name="First Fit" class="com.cloud.deploy.FirstFitPlanner"/>
             <adapter name="UserDispersing" class="com.cloud.deploy.UserDispersingPlanner"/>
             <adapter name="UserConcentratedPod" class="com.cloud.deploy.UserConcentratedPodPlanner"/>
+            <adapter name="DedicatedResource" class="com.cloud.deploy.DedicatedResourcePlanner">
             <adapter name="BareMetal Fit" class="com.cloud.deploy.BareMetalPlanner"/>
         </adapters>
         <adapters key="com.cloud.alert.AlertAdapter">
@@ -239,6 +240,7 @@ under the License.
         <pluggableservice name="NiciraNvpElementService" key="com.cloud.network.element.NiciraNvpElementService" class="com.cloud.network.element.NiciraNvpElement"/>
         <pluggableservice name="ApiRateLimitService" key="org.apache.cloudstack.ratelimit.ApiRateLimitService" class="org.apache.cloudstack.ratelimit.ApiRateLimitServiceImpl"/>
         <pluggableservice name="BigSwitchVnsElementService" key="com.cloud.network.element.BigSwitchVnsElementService" class="com.cloud.network.element.BigSwitchVnsElement"/>
+        <pluggableservice name="DedicatedService" key="com.cloud.service.DedicatedService" class="com.cloud.manager.DedicatedResourceManagerImpl"/>
         <dao name="OvsTunnelInterfaceDao" class="com.cloud.network.ovs.dao.OvsTunnelInterfaceDaoImpl" singleton="false"/>
         <dao name="OvsTunnelAccountDao" class="com.cloud.network.ovs.dao.OvsTunnelNetworkDaoImpl" singleton="false"/>
         <dao name="NiciraNvpDao" class="com.cloud.network.dao.NiciraNvpDaoImpl" singleton="false"/>
@@ -257,6 +259,7 @@ under the License.
         <dao name="ServiceOffering configuration server" class="com.cloud.service.dao.ServiceOfferingDaoImpl" singleton="false"/>
         <dao name="host zone configuration server" class="com.cloud.dc.dao.DataCenterDaoImpl" singleton="false"/>
         <dao name="host pod configuration server" class="com.cloud.dc.dao.HostPodDaoImpl" singleton="false"/>
+        <dao name="DedicatedResourceDao" class="com.cloud.dc.dao.DedicatedResourceDaoImpl" singleton="false"/>
         <dao name="DomainDao" class="com.cloud.domain.dao.DomainDaoImpl" singleton="false"/>
         <dao name="NetworkOfferingDao" class="com.cloud.offerings.dao.NetworkOfferingDaoImpl" singleton="false"/>
         <dao name="DataCenterDao" class="com.cloud.dc.dao.DataCenterDaoImpl" singleton="false"/>

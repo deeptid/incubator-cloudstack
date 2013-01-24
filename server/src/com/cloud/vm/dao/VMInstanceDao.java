@@ -116,4 +116,16 @@ public interface VMInstanceDao extends GenericDao<VMInstanceVO, Long>, StateDao<
      */
     List<String> listDistinctHostNames(long networkId, VirtualMachine.Type... types);
 
+    /**
+     * @param hostId
+     * @param accountId
+     * @return true if host has dedicated VMs of same account
+     */
+    boolean checkIfHosthasDedicatedVms(Long hostId, Long accountId);
+
+    /**
+     * @param hostId
+     * @return true if host is empty
+     */
+    boolean checkIfHostIsEmpty(Long hostId);
 }

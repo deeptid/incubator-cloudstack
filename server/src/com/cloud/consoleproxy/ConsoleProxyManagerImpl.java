@@ -788,7 +788,7 @@ public class ConsoleProxyManagerImpl extends ManagerBase implements ConsoleProxy
         }
 
         ConsoleProxyVO proxy = new ConsoleProxyVO(id, _serviceOffering.getId(), name, template.getId(), template.getHypervisorType(), template.getGuestOSId(), dataCenterId, systemAcct.getDomainId(),
-                systemAcct.getId(), 0, _serviceOffering.getOfferHA());
+                systemAcct.getId(), 0, _serviceOffering.getOfferHA(), false);
         try {
             proxy = _itMgr.allocate(proxy, template, _serviceOffering, networks, plan, null, systemAcct);
         } catch (InsufficientCapacityException e) {
@@ -1518,9 +1518,9 @@ public class ConsoleProxyManagerImpl extends ManagerBase implements ConsoleProxy
         }
 
         if(_serviceOffering == null || !_serviceOffering.getSystemUse()){
-            int ramSize = NumbersUtil.parseInt(_configDao.getValue("console.ram.size"), DEFAULT_PROXY_VM_RAMSIZE);
-            int cpuFreq = NumbersUtil.parseInt(_configDao.getValue("console.cpu.mhz"), DEFAULT_PROXY_VM_CPUMHZ);
-            _serviceOffering = new ServiceOfferingVO("System Offering For Console Proxy", 1, ramSize, cpuFreq, 0, 0, false, null, useLocalStorage, true, null, true, VirtualMachine.Type.ConsoleProxy, true);
+        	int ramSize = NumbersUtil.parseInt(_configDao.getValue("console.ram.size"), DEFAULT_PROXY_VM_RAMSIZE);
+        	int cpuFreq = NumbersUtil.parseInt(_configDao.getValue("console.cpu.mhz"), DEFAULT_PROXY_VM_CPUMHZ);
+            _serviceOffering = new ServiceOfferingVO("System Offering For Console Proxy", 1, ramSize, cpuFreq, 0, 0, false, false, null, useLocalStorage, true, null, true, VirtualMachine.Type.ConsoleProxy, true);
             _serviceOffering.setUniqueName(ServiceOffering.consoleProxyDefaultOffUniqueName);
             _serviceOffering = _offeringDao.persistSystemServiceOffering(_serviceOffering);
 

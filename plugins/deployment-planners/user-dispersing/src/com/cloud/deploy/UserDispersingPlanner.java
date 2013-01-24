@@ -30,6 +30,7 @@ import org.apache.log4j.Logger;
 
 import com.cloud.configuration.Config;
 import com.cloud.hypervisor.Hypervisor.HypervisorType;
+import com.cloud.offering.ServiceOffering;
 import com.cloud.utils.NumbersUtil;
 import com.cloud.utils.Pair;
 import com.cloud.vm.VirtualMachine;
@@ -193,9 +194,11 @@ public class UserDispersingPlanner extends FirstFitPlanner implements Deployment
 
     @Override
     public boolean canHandle(VirtualMachineProfile<? extends VirtualMachine> vm, DeploymentPlan plan, ExcludeList avoid) {
+        ServiceOffering offering = vm.getServiceOffering();
+        VirtualMachine virtualMachine = vm.getVirtualMachine();
         if(vm.getHypervisorType() != HypervisorType.BareMetal){
             //check the allocation strategy
-            if (_allocationAlgorithm != null && _allocationAlgorithm.equals(AllocationAlgorithm.userdispersing.toString())) {
+            if (_allocationAlgorithm != null && _allocationAlgorithm.equals(AllocationAlgorithm.userdispersing.toString())&& !offering.getImplicitDedication() && !virtualMachine.getUseDedication()) {
                 return true;
             }
         }

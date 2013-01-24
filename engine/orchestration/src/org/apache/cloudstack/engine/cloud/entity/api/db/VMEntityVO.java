@@ -574,4 +574,10 @@ public class VMEntityVO implements VirtualMachine, FiniteStateObject<State, Virt
         this.vmReservation = vmReservation;
     }
 
+    @Override
+    public boolean getUseDedication() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
 }

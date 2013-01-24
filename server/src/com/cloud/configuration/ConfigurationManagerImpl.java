@@ -776,7 +776,7 @@ public class ConfigurationManagerImpl extends ManagerBase implements Configurati
 
         return true;
     }
-
+    
     @Override
     public Pod editPod(UpdatePodCmd cmd) {
         return editPod(cmd.getId(), cmd.getPodName(), cmd.getStartIp(), cmd.getEndIp(), cmd.getGateway(), cmd.getNetmask(), cmd.getAllocationState());
@@ -1819,16 +1819,22 @@ public class ConfigurationManagerImpl extends ManagerBase implements Configurati
             throw new InvalidParameterValueException("Network rate can be specified only for non-System offering and system offerings having \"domainrouter\" systemvmtype");
         }
 
+        Boolean implicit = cmd.getImplicitDedication();
+        if (implicit == null) {
+            implicit = false;
+        }
+
         return createServiceOffering(userId, cmd.getIsSystem(), vmType, cmd.getServiceOfferingName(), cpuNumber.intValue(), memory.intValue(), cpuSpeed.intValue(), cmd.getDisplayText(),
-                localStorageRequired, offerHA, limitCpuUse, volatileVm, cmd.getTags(), cmd.getDomainId(), cmd.getHostTag(), cmd.getNetworkRate());
+
+                localStorageRequired, offerHA, limitCpuUse, volatileVm, cmd.getTags(), cmd.getDomainId(), cmd.getHostTag(), cmd.getNetworkRate(), implicit);
     }
 
     @Override
     @ActionEvent(eventType = EventTypes.EVENT_SERVICE_OFFERING_CREATE, eventDescription = "creating service offering")
     public ServiceOfferingVO createServiceOffering(long userId, boolean isSystem, VirtualMachine.Type vm_type, String name, int cpu, int ramSize, int speed, String displayText,
-            boolean localStorageRequired, boolean offerHA, boolean limitResourceUse, boolean volatileVm,  String tags, Long domainId, String hostTag, Integer networkRate) {
+            boolean localStorageRequired, boolean offerHA, boolean limitResourceUse, boolean volatileVm,  String tags, Long domainId, String hostTag, Integer networkRate, boolean implicitDedication) {
         tags = cleanupTags(tags);
-        ServiceOfferingVO offering = new ServiceOfferingVO(name, cpu, ramSize, speed, networkRate, null, offerHA, limitResourceUse, volatileVm, displayText, localStorageRequired, false, tags, isSystem, vm_type,
+        ServiceOfferingVO offering = new ServiceOfferingVO(name, cpu, ramSize, speed, networkRate, null, offerHA, implicitDedication, limitResourceUse, volatileVm, displayText, localStorageRequired, false, tags, isSystem, vm_type,
                 domainId, hostTag);
 
         if ((offering = _serviceOfferingDao.persist(offering)) != null) {

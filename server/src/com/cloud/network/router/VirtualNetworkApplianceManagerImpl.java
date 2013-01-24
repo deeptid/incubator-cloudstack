@@ -677,7 +677,7 @@ public class VirtualNetworkApplianceManagerImpl extends ManagerBase implements V
 
         boolean useLocalStorage = Boolean.parseBoolean(configs.get(Config.SystemVMUseLocalStorage.key()));
         _offering = new ServiceOfferingVO("System Offering For Software Router", 1, _routerRamSize, _routerCpuMHz, null,
-                null, true, null, useLocalStorage, true, null, true, VirtualMachine.Type.DomainRouter, true);
+                null, true, false, null, useLocalStorage, true, null, true, VirtualMachine.Type.DomainRouter, true);
         _offering.setUniqueName(ServiceOffering.routerDefaultOffUniqueName);
         _offering = _serviceOfferingDao.persistSystemServiceOffering(_offering);
 
@@ -1595,7 +1595,7 @@ public class VirtualNetworkApplianceManagerImpl extends ManagerBase implements V
                 router = new DomainRouterVO(id, routerOffering.getId(), vrProvider.getId(), 
                 VirtualMachineName.getRouterName(id, _instance), template.getId(), template.getHypervisorType(),
                 template.getGuestOSId(), owner.getDomainId(), owner.getId(), isRedundant, 0, false, 
-                RedundantState.UNKNOWN, offerHA, false, vpcId);
+                RedundantState.UNKNOWN, offerHA, false, false, vpcId);
                 router.setRole(Role.VIRTUAL_ROUTER);
                 router = _itMgr.allocate(router, template, routerOffering, networks, plan, null, owner);
             } catch (InsufficientCapacityException ex) {

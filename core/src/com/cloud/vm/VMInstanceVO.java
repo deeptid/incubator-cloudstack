@@ -139,6 +139,9 @@ public class VMInstanceVO implements VirtualMachine, FiniteStateObject<State, Vi
     @Column(name="reservation_id")
     protected String reservationId;
 
+    @Column(name="use_dedication", updatable=true, nullable=true)
+    protected boolean useDedication;
+
     @Column(name="hypervisor_type")
     @Enumerated(value=EnumType.STRING)
     protected HypervisorType hypervisorType;
@@ -168,7 +171,8 @@ public class VMInstanceVO implements VirtualMachine, FiniteStateObject<State, Vi
             long guestOSId,
             long domainId,
             long accountId,
-            boolean haEnabled) {
+            boolean haEnabled,
+            boolean useDedication) {
         this.id = id;
         this.hostName = name != null ? name : this.uuid;
         if (vmTemplateId != null) {
@@ -178,6 +182,7 @@ public class VMInstanceVO implements VirtualMachine, FiniteStateObject<State, Vi
         this.type = type;
         this.guestOSId = guestOSId;
         this.haEnabled = haEnabled;
+        this.useDedication = useDedication;
         this.vncPassword = Long.toHexString(new Random().nextLong());
         this.state = State.Stopped;
         this.accountId = accountId;
@@ -198,8 +203,9 @@ public class VMInstanceVO implements VirtualMachine, FiniteStateObject<State, Vi
             long domainId,
             long accountId,
             boolean haEnabled,
+            boolean useDedication,
             boolean limitResourceUse, Long diskOfferingId) {
-        this(id, serviceOfferingId, name, instanceName, type, vmTemplateId, hypervisorType, guestOSId, domainId, accountId, haEnabled);
+        this(id, serviceOfferingId, name, instanceName, type, vmTemplateId, hypervisorType, guestOSId, domainId, accountId, haEnabled, useDedication);
         this.limitCpuUse = limitResourceUse;
         this.diskOfferingId = diskOfferingId;
     }
@@ -413,6 +419,15 @@ public class VMInstanceVO implements VirtualMachine, FiniteStateObject<State, Vi
 
     public void setHaEnabled(boolean value) {
         haEnabled = value;
+    }
+
+    @Override
+    public boolean getUseDedication() {
+        return useDedication;
+    }
+
+    public void setUseDedication(boolean useDedication) {
+        this.useDedication = useDedication;
     }
 
     public void setReservationId(String reservationId) {

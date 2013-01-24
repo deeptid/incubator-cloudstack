@@ -2382,7 +2382,7 @@ public class UserVmManagerImpl extends ManagerBase implements UserVmManager, Use
         UserVmVO vm = new UserVmVO(id, instanceName, displayName,
                 template.getId(), hypervisorType, template.getGuestOSId(),
                 offering.getOfferHA(), offering.getLimitCpuUse(),
-                owner.getDomainId(), owner.getId(), offering.getId(), userData,
+                offering.getImplicitDedication(), owner.getDomainId(), owner.getId(), offering.getId(), userData,
                 hostName, diskOfferingId);
         vm.setUuid(uuidName);
 
@@ -3342,7 +3342,24 @@ public class UserVmManagerImpl extends ManagerBase implements UserVmManager, Use
                             + destinationHost.getStatus() + ", state: "
                             + destinationHost.getResourceState());
         }
-
+        /*
+        ServiceOfferingVO offering = _serviceOfferingDao.findById(vm.getServiceOfferingId());
+        boolean isVmDedicated = offering.getIsDedicated();
+        //check if host is dedicated whereas vm to be migrated is not
+        Long dedicatedVms = _vmInstanceDao.countDedicatedVms(destinationHost.getId(), null);
+        if(!isVmDedicated) {
+            if (dedicatedVms != 0) {
+                throw new CloudRuntimeException("Cannot migrate VM, VM is non-dedicated whereas host "+ destinationHost.getId() + " has dedicated VMs");
+            }
+        } else {
+            //check if host is non-dedicated whereas vm to be migrated is
+            Long dedicatedVmsOfSameAccount = _vmInstanceDao.countDedicatedVms(destinationHost.getId(), vm.getAccountId());
+            Long getVms = _vmInstanceDao.countUserVms(destinationHost.getId());
+            if (getVms != 0 || dedicatedVmsOfSameAccount == 0) {
+                throw new CloudRuntimeException("Cannot migrate VM, VM is dedicated whereas host "+ destinationHost.getId() + " is not dedicated");
+            }
+        }
+        */
         // call to core process
         DataCenterVO dcVO = _dcDao.findById(destinationHost.getDataCenterId());
         HostPodVO pod = _podDao.findById(destinationHost.getPodId());

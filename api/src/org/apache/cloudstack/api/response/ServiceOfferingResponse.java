@@ -82,6 +82,9 @@ public class ServiceOfferingResponse extends BaseResponse {
     @SerializedName(ApiConstants.NETWORKRATE) @Param(description="data transfer rate in megabits per second allowed.")
     private Integer networkRate;
 
+    @SerializedName(ApiConstants.IMPLICIT_DEDICATION) @Param(description="if true, dedicated resource will be used")
+    private Boolean implicitDedication;
+
 
     public String getId() {
         return id;
@@ -224,5 +227,13 @@ public class ServiceOfferingResponse extends BaseResponse {
 
     public void setNetworkRate(Integer networkRate) {
         this.networkRate = networkRate;
+    }
+
+    public Boolean getImplicitDedication() {
+        return implicitDedication;
+    }
+
+    public void setImplicitDedication(Boolean implicitDedication) {
+        this.implicitDedication = implicitDedication;
     }
 }

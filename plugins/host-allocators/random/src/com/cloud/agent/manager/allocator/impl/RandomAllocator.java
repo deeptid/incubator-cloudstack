@@ -37,8 +37,11 @@ import com.cloud.host.dao.HostDao;
 import com.cloud.offering.ServiceOffering;
 import com.cloud.resource.ResourceManager;
 import com.cloud.utils.component.AdapterBase;
+import com.cloud.vm.VMInstanceVO;
 import com.cloud.vm.VirtualMachine;
 import com.cloud.vm.VirtualMachineProfile;
+import com.cloud.vm.dao.VMInstanceDao;
+import com.cloud.vm.dao.VMInstanceDaoImpl;
 
 @Component
 @Local(value=HostAllocator.class)
@@ -46,6 +49,7 @@ public class RandomAllocator extends AdapterBase implements HostAllocator {
     private static final Logger s_logger = Logger.getLogger(RandomAllocator.class);
     @Inject private HostDao _hostDao;
     @Inject private ResourceManager _resourceMgr;
+    @Inject private VMInstanceDao _vmInstanceDao;
 
     @Override
     public List<Host> allocateTo(VirtualMachineProfile<? extends VirtualMachine> vmProfile, DeploymentPlan plan, Type type,
@@ -89,7 +93,8 @@ public class RandomAllocator extends AdapterBase implements HostAllocator {
             return suitableHosts;
         }
 
-
+        boolean isVmDedicated = offering.getImplicitDedication();
+        VMInstanceVO vm = _vmInstanceDao.findById(vmProfile.getId());
         Collections.shuffle(hosts);
         for (Host host : hosts) {
             if(suitableHosts.size() == returnUpTo){
@@ -97,6 +102,22 @@ public class RandomAllocator extends AdapterBase implements HostAllocator {
             }
 
             if (!avoid.shouldAvoid(host)) {
+                /*Long dedicatedVms = _vmInstanceDao.countDedicatedVms(host.getId(), null);
+                Long getVms = _vmInstanceDao.countUserVms(host.getId());
+                if (!isVmDedicated) {
+                    if (dedicatedVms != 0){
+                        if (s_logger.isDebugEnabled()) {
+                            s_logger.debug("Host has dedicated instances, cannot be added to the list: " + host.getId());
+                        }
+                    } else {
+                        suitableHosts.add(host);
+                    }
+                } else {
+                    dedicatedVms = _vmInstanceDao.countDedicatedVms(host.getId(), vm.getAccountId());
+                    if (dedicatedVms != 0 || getVms == 0) {
+                        suitableHosts.add(host);
+                    }
+                }*/
                 suitableHosts.add(host);
             }else{
                 if (s_logger.isDebugEnabled()) {

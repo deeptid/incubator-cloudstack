@@ -404,8 +404,8 @@ ElasticLoadBalancerManager, VirtualMachineGuru<DomainRouterVO> {
         _elasticLbVmRamSize = NumbersUtil.parseInt(configs.get(Config.ElasticLoadBalancerVmMemory.key()), DEFAULT_ELB_VM_RAMSIZE);
         _elasticLbvmCpuMHz = NumbersUtil.parseInt(configs.get(Config.ElasticLoadBalancerVmCpuMhz.key()), DEFAULT_ELB_VM_CPU_MHZ);
         _elasticLbvmNumCpu = NumbersUtil.parseInt(configs.get(Config.ElasticLoadBalancerVmNumVcpu.key()), 1);
-        _elasticLbVmOffering = new ServiceOfferingVO("System Offering For Elastic LB VM", _elasticLbvmNumCpu, 
-                _elasticLbVmRamSize, _elasticLbvmCpuMHz, 0, 0, true, null, useLocalStorage, 
+        _elasticLbVmOffering = new ServiceOfferingVO("System Offering For Elastic LB VM", _elasticLbvmNumCpu,
+                _elasticLbVmRamSize, _elasticLbvmCpuMHz, 0, 0, true, false, null, useLocalStorage,
                 true, null, true, VirtualMachine.Type.ElasticLoadBalancerVm, true);
         _elasticLbVmOffering.setUniqueName(ServiceOffering.elbVmDefaultOffUniqueName);
         _elasticLbVmOffering = _serviceOfferingDao.persistSystemServiceOffering(_elasticLbVmOffering);
@@ -509,7 +509,7 @@ ElasticLoadBalancerManager, VirtualMachineGuru<DomainRouterVO> {
                 elbVm = new DomainRouterVO(id, _elasticLbVmOffering.getId(), vrProvider.getId(), 
                         VirtualMachineName.getSystemVmName(id, _instance, _elbVmNamePrefix), template.getId(), template.getHypervisorType(),
                         template.getGuestOSId(), owner.getDomainId(), owner.getId(), false, 0, false, RedundantState.UNKNOWN,
-                        _elasticLbVmOffering.getOfferHA(), false, VirtualMachine.Type.ElasticLoadBalancerVm, null);
+                        _elasticLbVmOffering.getOfferHA(), false, false, VirtualMachine.Type.ElasticLoadBalancerVm, null);
                 elbVm.setRole(Role.LB);
                 elbVm = _itMgr.allocate(elbVm, template, _elasticLbVmOffering, networks, plan, null, owner);
                 //TODO: create usage stats

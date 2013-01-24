@@ -25,6 +25,7 @@ import javax.ejb.Local;
 import org.apache.log4j.Logger;
 
 import com.cloud.hypervisor.Hypervisor.HypervisorType;
+import com.cloud.offering.ServiceOffering;
 import com.cloud.utils.Pair;
 import com.cloud.vm.VirtualMachine;
 import com.cloud.vm.VirtualMachineProfile;
@@ -143,9 +144,11 @@ public class UserConcentratedPodPlanner extends FirstFitPlanner implements Deplo
 
     @Override
     public boolean canHandle(VirtualMachineProfile<? extends VirtualMachine> vm, DeploymentPlan plan, ExcludeList avoid) {
+        ServiceOffering offering = vm.getServiceOffering();
+        VirtualMachine virtualMachine = vm.getVirtualMachine();
         if(vm.getHypervisorType() != HypervisorType.BareMetal){
             //check the allocation strategy
-            if (_allocationAlgorithm != null && (_allocationAlgorithm.equals(AllocationAlgorithm.userconcentratedpod_random.toString()) || _allocationAlgorithm.equals(AllocationAlgorithm.userconcentratedpod_firstfit.toString()))){
+            if (_allocationAlgorithm != null && (_allocationAlgorithm.equals(AllocationAlgorithm.userconcentratedpod_random.toString()) || _allocationAlgorithm.equals(AllocationAlgorithm.userconcentratedpod_firstfit.toString())) && !offering.getImplicitDedication() && !virtualMachine.getUseDedication()){
                 return true;
             }
         }

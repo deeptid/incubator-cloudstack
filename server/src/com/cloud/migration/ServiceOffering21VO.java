@@ -51,11 +51,14 @@ public class ServiceOffering21VO extends DiskOffering21VO implements ServiceOffe
     @Column(name="host_tag")
     private String hostTag;
 
+    @Column(name="implicit_dedication")
+    boolean implicitDedication;
+
     protected ServiceOffering21VO() {
         super();
     }
 
-    public ServiceOffering21VO(String name, int cpu, int ramSize, int speed, Integer rateMbps, Integer multicastRateMbps, boolean offerHA, String displayText, boolean useLocalStorage, boolean recreatable, String tags) {
+    public ServiceOffering21VO(String name, int cpu, int ramSize, int speed, Integer rateMbps, Integer multicastRateMbps, boolean offerHA, boolean implicitDedication, String displayText, boolean useLocalStorage, boolean recreatable, String tags) {
         super(name, displayText, false, tags, recreatable, useLocalStorage);
         this.cpu = cpu;
         this.ramSize = ramSize;
@@ -63,11 +66,12 @@ public class ServiceOffering21VO extends DiskOffering21VO implements ServiceOffe
         this.rateMbps = rateMbps;
         this.multicastRateMbps = multicastRateMbps;
         this.offerHA = offerHA;
+        this.implicitDedication = implicitDedication;
     }
 
-    public ServiceOffering21VO(String name, int cpu, int ramSize, int speed, Integer rateMbps, Integer multicastRateMbps, boolean offerHA, String displayText, boolean useLocalStorage, boolean recreatable, String tags, String hostTag) {
-    	this(name, cpu, ramSize, speed, rateMbps, multicastRateMbps, offerHA, displayText, useLocalStorage, recreatable, tags);
-       	this.hostTag = hostTag;
+    public ServiceOffering21VO(String name, int cpu, int ramSize, int speed, Integer rateMbps, Integer multicastRateMbps, boolean offerHA, boolean implicitDedication, String displayText, boolean useLocalStorage, boolean recreatable, String tags, String hostTag) {
+        this(name, cpu, ramSize, speed, rateMbps, multicastRateMbps, offerHA, implicitDedication, displayText, useLocalStorage, recreatable, tags);
+        this.hostTag = hostTag;
     }
 
 
@@ -161,6 +165,15 @@ public class ServiceOffering21VO extends DiskOffering21VO implements ServiceOffe
     @Override
     public String getSystemVmType() {
         return null;
+    }
+
+    @Override
+    public boolean getImplicitDedication() {
+        return implicitDedication;
+    }
+
+    public void setImplicitDedication(boolean implicitDedication) {
+        this.implicitDedication = implicitDedication;
     }
 
     @Override

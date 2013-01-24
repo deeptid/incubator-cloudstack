@@ -51,7 +51,7 @@ public class ServiceOfferingVO extends DiskOfferingVO implements ServiceOffering
     private boolean offerHA;
 
     @Column(name="limit_cpu_use")
-    private boolean limitCpuUse;    
+    private boolean limitCpuUse;
     
     @Column(name="is_volatile")
     private boolean volatileVm;
@@ -64,15 +64,18 @@ public class ServiceOfferingVO extends DiskOfferingVO implements ServiceOffering
 
     @Column(name="vm_type")
     private String vm_type;
-    
+
     @Column(name="sort_key")
     int sortKey;
-    
+
+    @Column(name="implicit_dedication")
+    boolean implicitDedication;
+
     protected ServiceOfferingVO() {
         super();
     }
 
-    public ServiceOfferingVO(String name, int cpu, int ramSize, int speed, Integer rateMbps, Integer multicastRateMbps, boolean offerHA, String displayText, boolean useLocalStorage, boolean recreatable, String tags, boolean systemUse, VirtualMachine.Type vm_type, boolean defaultUse) {
+    public ServiceOfferingVO(String name, int cpu, int ramSize, int speed, Integer rateMbps, Integer multicastRateMbps, boolean offerHA, boolean implicitDedication, String displayText, boolean useLocalStorage, boolean recreatable, String tags, boolean systemUse, VirtualMachine.Type vm_type, boolean defaultUse) {
         super(name, displayText, false, tags, recreatable, useLocalStorage, systemUse, true);
         this.cpu = cpu;
         this.ramSize = ramSize;
@@ -84,9 +87,10 @@ public class ServiceOfferingVO extends DiskOfferingVO implements ServiceOffering
         this.volatileVm = false;
         this.default_use = defaultUse;
         this.vm_type = vm_type == null ? null : vm_type.toString().toLowerCase();
+        this.implicitDedication = implicitDedication;
     }
 
-    public ServiceOfferingVO(String name, int cpu, int ramSize, int speed, Integer rateMbps, Integer multicastRateMbps, boolean offerHA, boolean limitCpuUse, boolean volatileVm, String displayText, boolean useLocalStorage, boolean recreatable, String tags, boolean systemUse, VirtualMachine.Type vm_type, Long domainId) {
+    public ServiceOfferingVO(String name, int cpu, int ramSize, int speed, Integer rateMbps, Integer multicastRateMbps, boolean offerHA, boolean implicitDedication, boolean limitCpuUse, boolean volatileVm, String displayText, boolean useLocalStorage, boolean recreatable, String tags, boolean systemUse, VirtualMachine.Type vm_type, Long domainId) {
         super(name, displayText, false, tags, recreatable, useLocalStorage, systemUse, true, domainId);
         this.cpu = cpu;
         this.ramSize = ramSize;
@@ -97,12 +101,13 @@ public class ServiceOfferingVO extends DiskOfferingVO implements ServiceOffering
         this.limitCpuUse = limitCpuUse;  
         this.volatileVm = volatileVm;
         this.vm_type = vm_type == null ? null : vm_type.toString().toLowerCase();
+        this.implicitDedication = implicitDedication;
     }
 
-    public ServiceOfferingVO(String name, int cpu, int ramSize, int speed, Integer rateMbps, Integer multicastRateMbps, boolean offerHA, boolean limitResourceUse, boolean volatileVm, String displayText, boolean useLocalStorage, boolean recreatable, String tags, boolean systemUse, VirtualMachine.Type vm_type, Long domainId, String hostTag) {
-        this(name, cpu, ramSize, speed, rateMbps, multicastRateMbps, offerHA, limitResourceUse, volatileVm, displayText, useLocalStorage, recreatable, tags, systemUse, vm_type, domainId);
+    public ServiceOfferingVO(String name, int cpu, int ramSize, int speed, Integer rateMbps, Integer multicastRateMbps, boolean offerHA, boolean implicitDedication, boolean limitResourceUse, boolean volatileVm, String displayText, boolean useLocalStorage, boolean recreatable, String tags, boolean systemUse, VirtualMachine.Type vm_type, Long domainId, String hostTag) {
+        this(name, cpu, ramSize, speed, rateMbps, multicastRateMbps, offerHA, implicitDedication, limitResourceUse, volatileVm, displayText, useLocalStorage, recreatable, tags, systemUse, vm_type, domainId);
         this.hostTag = hostTag;
-    }    
+    }
 
     @Override
 	public boolean getOfferHA() {
@@ -202,10 +207,18 @@ public class ServiceOfferingVO extends DiskOfferingVO implements ServiceOffering
 	public int getSortKey() {
 		return sortKey;
 	}
-	
-    @Override
+
     public boolean getVolatileVm() {
         return volatileVm;
+    }
+
+    @Override
+    public boolean getImplicitDedication() {
+        return implicitDedication;
+    }
+
+    public void setImplicitDedication(boolean implicitDedication) {
+        this.implicitDedication = implicitDedication;
     }
 
 }

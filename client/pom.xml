@@ -32,6 +32,11 @@
     </dependency>
     <dependency>
       <groupId>org.apache.cloudstack</groupId>
+      <artifactId>cloud-plugin-dedicated-resources</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.cloudstack</groupId>
       <artifactId>cloud-plugin-api-limit-account-based</artifactId>
       <version>${project.version}</version>
     </dependency>    
@@ -124,6 +129,11 @@
     <dependency>
       <groupId>org.apache.cloudstack</groupId>
       <artifactId>cloud-plugin-planner-user-concentrated-pod</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.cloudstack</groupId>
+      <artifactId>cloud-plugin-planner-dedicated-resource</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

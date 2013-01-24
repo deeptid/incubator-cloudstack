@@ -91,13 +91,17 @@
     <property name="name" value="NiciraNvp"/>
   </bean>
   -->
-  
+
 <!--
   <bean id="BigSwitchVnsElementService" class="com.cloud.network.element.BigSwitchVnsElement">
     <property name="name" value="BigSwitchVnsElementService"/>
   </bean>
 -->
-                   
+<!--
+  <bean id="DedicatedResourceManager" class="com.cloud.dedicated.manager.DedicatedResourceManagerImpl">
+    <property name="name" value="DedicatedResourceManager"/>
+  </bean>
+  -->
   <!--
      Adapters
   -->
@@ -232,6 +236,10 @@
   
   <bean id="UserConcentratedPodPlanner" class="com.cloud.deploy.UserConcentratedPodPlanner">
     <property name="name" value="UserConcentratedPod"/>
+  </bean>
+
+  <bean id="DedicatedResourcePlanner" class="com.cloud.deploy.DedicatedResourcePlanner">
+    <property name="name" value="DedicatedResource"/>
   </bean>
 
   <bean id="BareMetalPlanner" class="com.cloud.baremetal.manager.BareMetalPlanner">

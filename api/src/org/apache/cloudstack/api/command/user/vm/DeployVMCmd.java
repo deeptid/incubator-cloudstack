@@ -172,6 +172,8 @@ public class DeployVMCmd extends BaseAsyncCreateCmd {
     @Parameter(name=ApiConstants.START_VM, type=CommandType.BOOLEAN, description="true if network offering supports specifying ip ranges; defaulted to true if not specified")
     private Boolean startVm;
 
+    @Parameter(name=ApiConstants.USE_DEDICATION, type=CommandType.BOOLEAN, description="true if network offering supports specifying ip ranges; defaulted to true if not specified")
+    private Boolean useDedication;
 
     /////////////////////////////////////////////////////
     /////////////////// Accessors ///////////////////////
@@ -277,6 +279,10 @@ public class DeployVMCmd extends BaseAsyncCreateCmd {
 
     public boolean getStartVm() {
         return startVm == null ? true : startVm;
+    }
+
+    public boolean getUseDedication() {
+        return useDedication == null ? true : useDedication;
     }
 
     private Map<Long, IpAddresses> getIpToNetworkMap() {

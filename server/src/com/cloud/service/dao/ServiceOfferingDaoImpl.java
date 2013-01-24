@@ -42,10 +42,12 @@ public class ServiceOfferingDaoImpl extends GenericDaoBase<ServiceOfferingVO, Lo
     protected final SearchBuilder<ServiceOfferingVO> SystemServiceOffering;
     protected final SearchBuilder<ServiceOfferingVO> ServiceOfferingsByKeywordSearch;
     protected final SearchBuilder<ServiceOfferingVO> PublicServiceOfferingSearch;
-    
+    protected final SearchBuilder<ServiceOfferingVO> DedicatedServiceOfferingSearch;
+
+
     public ServiceOfferingDaoImpl() {
         super();
-        
+
         UniqueNameSearch = createSearchBuilder();
         UniqueNameSearch.and("name", UniqueNameSearch.entity().getUniqueName(), SearchCriteria.Op.EQ);
         UniqueNameSearch.and("system", UniqueNameSearch.entity().getSystemUse(), SearchCriteria.Op.EQ);
@@ -68,13 +70,17 @@ public class ServiceOfferingDaoImpl extends GenericDaoBase<ServiceOfferingVO, Lo
         PublicServiceOfferingSearch.and("system", PublicServiceOfferingSearch.entity().getSystemUse(), SearchCriteria.Op.EQ);
         PublicServiceOfferingSearch.and("removed", PublicServiceOfferingSearch.entity().getRemoved(), SearchCriteria.Op.NULL);
         PublicServiceOfferingSearch.done();
-        
+
         ServiceOfferingsByKeywordSearch = createSearchBuilder();
-        ServiceOfferingsByKeywordSearch.or("name", ServiceOfferingsByKeywordSearch.entity().getName(), SearchCriteria.Op.EQ);        
+        ServiceOfferingsByKeywordSearch.or("name", ServiceOfferingsByKeywordSearch.entity().getName(), SearchCriteria.Op.EQ);
         ServiceOfferingsByKeywordSearch.or("displayText", ServiceOfferingsByKeywordSearch.entity().getDisplayText(), SearchCriteria.Op.EQ);
         ServiceOfferingsByKeywordSearch.done();
+
+        DedicatedServiceOfferingSearch = createSearchBuilder();
+        DedicatedServiceOfferingSearch.and("implicitDedication", DedicatedServiceOfferingSearch.entity().getImplicitDedication(), SearchCriteria.Op.EQ);
+        DedicatedServiceOfferingSearch.done();
     }
-    
+
     @Override
     public ServiceOfferingVO findByName(String name) {
         SearchCriteria<ServiceOfferingVO> sc = UniqueNameSearch.create();
@@ -110,11 +116,17 @@ public class ServiceOfferingDaoImpl extends GenericDaoBase<ServiceOfferingVO, Lo
     
     @Override
     public List<ServiceOfferingVO> findServiceOfferingByDomainId(Long domainId){
-    	SearchCriteria<ServiceOfferingVO> sc = ServiceOfferingsByDomainIdSearch.create();
-    	sc.setParameters("domainId", domainId);
-        return listBy(sc);    	
+        SearchCriteria<ServiceOfferingVO> sc = ServiceOfferingsByDomainIdSearch.create();
+        sc.setParameters("domainId", domainId);
+        return listBy(sc);
     }
-    
+
+    @Override
+    public List<ServiceOfferingVO> findDedicatedServiceOfferings(Boolean implicitDedication){
+        SearchCriteria<ServiceOfferingVO> sc = DedicatedServiceOfferingSearch.create();
+        sc.setParameters("implicitDedication", implicitDedication);
+        return listBy(sc);
+    }
 
     @Override
     public List<ServiceOfferingVO> findSystemOffering(Long domainId, Boolean isSystem, String vm_type){

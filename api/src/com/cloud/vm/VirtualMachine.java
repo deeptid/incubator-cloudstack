@@ -294,4 +294,6 @@ public interface VirtualMachine extends RunningOn, ControlledEntity, Identity, I
 
     public Map<String, String> getDetails();
 
+    boolean getUseDedication();
+
 }

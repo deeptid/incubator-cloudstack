@@ -79,6 +79,8 @@ import com.cloud.dc.dao.ClusterVSMMapDao;
 import com.cloud.dc.dao.DataCenterDao;
 import com.cloud.dc.dao.DataCenterIpAddressDao;
 import com.cloud.dc.dao.HostPodDao;
+import com.cloud.domain.DomainVO;
+import com.cloud.domain.dao.DomainDao;
 import com.cloud.exception.AgentUnavailableException;
 import com.cloud.exception.DiscoveryException;
 import com.cloud.exception.InvalidParameterValueException;
@@ -126,8 +128,10 @@ import com.cloud.storage.swift.SwiftManager;
 import com.cloud.template.VirtualMachineTemplate;
 import com.cloud.user.Account;
 import com.cloud.user.AccountManager;
+import com.cloud.user.AccountVO;
 import com.cloud.user.User;
 import com.cloud.user.UserContext;
+import com.cloud.user.dao.AccountDao;
 import com.cloud.utils.Pair;
 import com.cloud.utils.StringUtils;
 import com.cloud.utils.UriUtils;
@@ -167,6 +171,10 @@ public class ResourceManagerImpl extends ManagerBase implements ResourceManager,
     StorageManager                           _storageMgr;
     @Inject
     protected SecondaryStorageVmManager      _secondaryStorageMgr;
+    @Inject
+    protected AccountDao                     _accountDao; 
+    @Inject
+    protected DomainDao                      _domainDao;
 
     @Inject
     protected DataCenterDao                  _dcDao;
@@ -1281,7 +1289,7 @@ public class ResourceManagerImpl extends ManagerBase implements ResourceManager,
         }
 
         return cluster;
-    }
+    }    
 
     @Override
     public Host cancelMaintenance(CancelMaintenanceCmd cmd) {
@@ -1445,7 +1453,7 @@ public class ResourceManagerImpl extends ManagerBase implements ResourceManager,
 					"Unable to prepare for maintenance host " + hostId);
         }
     }
-
+    
     @Override
     public Host updateHost(UpdateHostCmd cmd) throws NoTransitionException {
         Long hostId = cmd.getId();

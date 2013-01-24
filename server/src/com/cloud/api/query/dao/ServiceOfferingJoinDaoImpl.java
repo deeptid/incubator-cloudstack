@@ -73,6 +73,7 @@ public class ServiceOfferingJoinDaoImpl extends GenericDaoBase<ServiceOfferingJo
         offeringResponse.setDomainId(offering.getDomainUuid());
         offeringResponse.setNetworkRate(offering.getRateMbps());
         offeringResponse.setHostTag(offering.getHostTag());
+        offeringResponse.setImplicitDedication(offering.getImplicitDedication());
         offeringResponse.setObjectName("serviceoffering");
 
         return offeringResponse;

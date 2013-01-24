@@ -578,7 +578,7 @@ public class SecondaryStorageManagerImpl extends ManagerBase implements Secondar
         }
 
         SecondaryStorageVmVO secStorageVm = new SecondaryStorageVmVO(id, _serviceOffering.getId(), name, template.getId(), template.getHypervisorType(), template.getGuestOSId(), dataCenterId,
-                systemAcct.getDomainId(), systemAcct.getId(), role, _serviceOffering.getOfferHA());
+                systemAcct.getDomainId(), systemAcct.getId(), role, _serviceOffering.getOfferHA(), false);
         try {
             secStorageVm = _itMgr.allocate(secStorageVm, template, _serviceOffering, networks, plan, null, systemAcct);
         } catch (InsufficientCapacityException e) {
@@ -844,7 +844,7 @@ public class SecondaryStorageManagerImpl extends ManagerBase implements Secondar
         	int ramSize = NumbersUtil.parseInt(_configDao.getValue("ssvm.ram.size"), DEFAULT_SS_VM_RAMSIZE);
         	int cpuFreq = NumbersUtil.parseInt(_configDao.getValue("ssvm.cpu.mhz"), DEFAULT_SS_VM_CPUMHZ);
             _useLocalStorage = Boolean.parseBoolean(configs.get(Config.SystemVMUseLocalStorage.key()));
-            _serviceOffering = new ServiceOfferingVO("System Offering For Secondary Storage VM", 1, ramSize, cpuFreq, null, null, false, null, _useLocalStorage, true, null, true, VirtualMachine.Type.SecondaryStorageVm, true);
+            _serviceOffering = new ServiceOfferingVO("System Offering For Secondary Storage VM", 1, ramSize, cpuFreq, null, null, false, false, null, _useLocalStorage, true, null, true, VirtualMachine.Type.SecondaryStorageVm, true);
             _serviceOffering.setUniqueName(ServiceOffering.ssvmDefaultOffUniqueName);
             _serviceOffering = _offeringDao.persistSystemServiceOffering(_serviceOffering);
             

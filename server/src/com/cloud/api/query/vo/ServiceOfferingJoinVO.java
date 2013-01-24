@@ -106,6 +106,9 @@ public class ServiceOfferingJoinVO extends BaseViewVO implements InternalIdentit
     @Column(name="domain_path")
     private String domainPath = null;
 
+    @Column(name="implicit_dedication")
+    boolean implicitDedication;
+
 
     public ServiceOfferingJoinVO() {
     }
@@ -233,6 +236,14 @@ public class ServiceOfferingJoinVO extends BaseViewVO implements InternalIdentit
 
     public void setCpu(int cpu) {
         this.cpu = cpu;
+    }
+
+    public boolean getImplicitDedication() {
+        return implicitDedication;
+    }
+
+    public void setImplicitDedication(boolean implicitDedication) {
+        this.implicitDedication = implicitDedication;
     }
 
     public int getSpeed() {
