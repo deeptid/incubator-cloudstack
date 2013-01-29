@@ -1322,6 +1322,13 @@
                                   networkOfferingObjs = json.listnetworkofferingsresponse.networkoffering;
                                   if (networkOfferingObjs != null && networkOfferingObjs.length > 0) {
                                     for (var i = 0; i < networkOfferingObjs.length; i++) {
+
+                                                  if(args.scope=="account-specific" && args.context.zones[0].securitygroupsenabled == true) { //BUG - CLOUDSTACK-1063
+                                                          var serviceObjArray = networkOfferingObjs[i].name;
+                                                          if(serviceObjArray == "DefaultSharedNetworkOfferingWithSGService"){
+                                                               continue;
+                                                              }
+                                                   }
 																			
 																			//comment out the following 12 lines because of CS-16718
 																			/*
@@ -9729,7 +9736,7 @@
                     args.response.success({data:{}});
                   },
                   error: function(json) {
-                    args.response.error(parseXMLHttpResponse(XMLHttpResponse));
+                    args.response.error(parseXMLHttpResponse(json));
                   }
                 });
               },
