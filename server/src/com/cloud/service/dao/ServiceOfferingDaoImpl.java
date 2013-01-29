@@ -40,6 +40,8 @@ public class ServiceOfferingDaoImpl extends GenericDaoBase<ServiceOfferingVO, Lo
     protected final SearchBuilder<ServiceOfferingVO> SystemServiceOffering;
     protected final SearchBuilder<ServiceOfferingVO> ServiceOfferingsByKeywordSearch;
     protected final SearchBuilder<ServiceOfferingVO> PublicServiceOfferingSearch;
+    protected final SearchBuilder<ServiceOfferingVO> DedicatedServiceOfferingSearch;
+    
     
     protected ServiceOfferingDaoImpl() {
         super();
@@ -71,6 +73,10 @@ public class ServiceOfferingDaoImpl extends GenericDaoBase<ServiceOfferingVO, Lo
         ServiceOfferingsByKeywordSearch.or("name", ServiceOfferingsByKeywordSearch.entity().getName(), SearchCriteria.Op.EQ);        
         ServiceOfferingsByKeywordSearch.or("displayText", ServiceOfferingsByKeywordSearch.entity().getDisplayText(), SearchCriteria.Op.EQ);
         ServiceOfferingsByKeywordSearch.done();
+        
+        DedicatedServiceOfferingSearch = createSearchBuilder();
+        DedicatedServiceOfferingSearch.and("isDedicated", DedicatedServiceOfferingSearch.entity().getIsDedicated(), SearchCriteria.Op.EQ);
+        DedicatedServiceOfferingSearch.done();
     }
     
     @Override
@@ -110,6 +116,13 @@ public class ServiceOfferingDaoImpl extends GenericDaoBase<ServiceOfferingVO, Lo
     public List<ServiceOfferingVO> findServiceOfferingByDomainId(Long domainId){
     	SearchCriteria<ServiceOfferingVO> sc = ServiceOfferingsByDomainIdSearch.create();
     	sc.setParameters("domainId", domainId);
+        return listBy(sc);    	
+    }
+    
+    @Override
+    public List<ServiceOfferingVO> findDedicatedServiceOfferings(Boolean isDedicated){
+    	SearchCriteria<ServiceOfferingVO> sc = DedicatedServiceOfferingSearch.create();
+    	sc.setParameters("isDedicated", isDedicated);
         return listBy(sc);    	
     }
     

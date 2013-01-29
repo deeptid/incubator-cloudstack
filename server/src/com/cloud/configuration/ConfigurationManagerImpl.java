@@ -44,7 +44,6 @@ import org.apache.cloudstack.api.command.admin.ldap.LDAPRemoveCmd;
 import org.apache.cloudstack.api.command.admin.network.DeleteNetworkOfferingCmd;
 import org.apache.cloudstack.api.command.admin.network.CreateNetworkOfferingCmd;
 import org.apache.cloudstack.api.command.admin.network.UpdateNetworkOfferingCmd;
-import org.apache.cloudstack.api.command.admin.offering.CreateDiskOfferingCmd;
 import org.apache.cloudstack.api.command.admin.offering.*;
 import org.apache.cloudstack.api.command.admin.pod.DeletePodCmd;
 import org.apache.cloudstack.api.command.admin.pod.UpdatePodCmd;
@@ -778,7 +777,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager, Configura
 
         return true;
     }
-
+    
     @Override
     public Pod editPod(UpdatePodCmd cmd) {
         return editPod(cmd.getId(), cmd.getPodName(), cmd.getStartIp(), cmd.getEndIp(), cmd.getGateway(), cmd.getNetmask(), cmd.getAllocationState());
@@ -1787,17 +1786,21 @@ public class ConfigurationManagerImpl implements ConfigurationManager, Configura
         if (cmd.getNetworkRate() != null && !allowNetworkRate) {
             throw new InvalidParameterValueException("Network rate can be specified only for non-System offering and system offerings having \"domainrouter\" systemvmtype");
         }
+        
+        if (cmd.getIsDedicated() == null) {
+        	throw new InvalidParameterValueException("Invalid value of isDedicated flag");
+        }
 
         return createServiceOffering(userId, cmd.getIsSystem(), vmType, cmd.getServiceOfferingName(), cpuNumber.intValue(), memory.intValue(), cpuSpeed.intValue(), cmd.getDisplayText(),
-                localStorageRequired, offerHA, limitCpuUse, cmd.getTags(), cmd.getDomainId(), cmd.getHostTag(), cmd.getNetworkRate());
+                localStorageRequired, offerHA, limitCpuUse, cmd.getTags(), cmd.getDomainId(), cmd.getHostTag(), cmd.getNetworkRate(), cmd.getIsDedicated());
     }
 
     @Override
     @ActionEvent(eventType = EventTypes.EVENT_SERVICE_OFFERING_CREATE, eventDescription = "creating service offering")
     public ServiceOfferingVO createServiceOffering(long userId, boolean isSystem, VirtualMachine.Type vm_type, String name, int cpu, int ramSize, int speed, String displayText,
-            boolean localStorageRequired, boolean offerHA, boolean limitResourceUse, String tags, Long domainId, String hostTag, Integer networkRate) {
+            boolean localStorageRequired, boolean offerHA, boolean limitResourceUse, String tags, Long domainId, String hostTag, Integer networkRate, boolean isDedicated) {
         tags = cleanupTags(tags);
-        ServiceOfferingVO offering = new ServiceOfferingVO(name, cpu, ramSize, speed, networkRate, null, offerHA, limitResourceUse, displayText, localStorageRequired, false, tags, isSystem, vm_type,
+        ServiceOfferingVO offering = new ServiceOfferingVO(name, cpu, ramSize, speed, networkRate, null, offerHA, isDedicated, limitResourceUse, displayText, localStorageRequired, false, tags, isSystem, vm_type,
                 domainId, hostTag);
 
         if ((offering = _serviceOfferingDao.persist(offering)) != null) {

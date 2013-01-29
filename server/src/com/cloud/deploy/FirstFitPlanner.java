@@ -76,6 +76,7 @@ import com.cloud.utils.component.Adapters;
 import com.cloud.utils.component.Inject;
 import com.cloud.vm.DiskProfile;
 import com.cloud.vm.ReservationContext;
+import com.cloud.vm.VMInstanceVO;
 import com.cloud.vm.VirtualMachine;
 import com.cloud.vm.VirtualMachineProfile;
 import com.cloud.vm.dao.UserVmDao;
@@ -167,7 +168,23 @@ public class FirstFitPlanner extends PlannerBase implements DeploymentPlanner {
             //choose the potential pool for this VM for this host
             if(!suitableVolumeStoragePools.isEmpty()){
                 List<Host> suitableHosts = new ArrayList<Host>();
-                suitableHosts.add(host);
+                List<Long> dedicatedVmInHost = _vmInstanceDao.listDedicatedVmInHost(host.getId(), null);
+                if (offering.getIsDedicated() == false) {
+                    if (dedicatedVmInHost == null || dedicatedVmInHost.size() == 0) {
+                        suitableHosts.add(host);
+                    } else {
+                        s_logger.debug("Host has dedicated instances, cannot be added to the list: " + host.getId());
+                    }
+                } else if (offering.getIsDedicated() == true) {
+                    //check if host is empty or has dedicated vms of same account
+                    dedicatedVmInHost = _vmInstanceDao.listDedicatedVmInHost(host.getId(), vm.getAccountId());
+                    List<VMInstanceVO> getHost = _vmInstanceDao.checkHostIsEmpty(host.getId());
+                    if (getHost == null || getHost.size() == 0 || dedicatedVmInHost.size() != 0) {
+                        suitableHosts.add(host);
+                    } else {
+                        s_logger.debug("Host is not suitable for dedicated instance: " + host.getId());
+                    }
+                }
 
                 Pair<Host, Map<Volume, StoragePool>> potentialResources = findPotentialDeploymentResources(suitableHosts, suitableVolumeStoragePools);
                 if(potentialResources != null){
@@ -210,8 +227,23 @@ public class FirstFitPlanner extends PlannerBase implements DeploymentPlanner {
                         //choose the potential pool for this VM for this host
                         if(!suitableVolumeStoragePools.isEmpty()){
                             List<Host> suitableHosts = new ArrayList<Host>();
-                            suitableHosts.add(host);
-
+                            List<Long> dedicatedVmInHost = _vmInstanceDao.listDedicatedVmInHost(host.getId(), null);
+                            if (offering.getIsDedicated() == false) {
+                                if (dedicatedVmInHost == null || dedicatedVmInHost.size() == 0) {
+                                    suitableHosts.add(host);
+                                } else {
+                                    s_logger.debug("Host has dedicated instances, cannot be added to the list: " + host.getId());
+                                }
+                            } else if (offering.getIsDedicated() == true) {
+                                dedicatedVmInHost = _vmInstanceDao.listDedicatedVmInHost(host.getId(), vm.getAccountId());
+                                //check if host is empty or has dedicated vms of same account
+                                List<VMInstanceVO> getHost = _vmInstanceDao.checkHostIsEmpty(host.getId());
+                                if (getHost == null || getHost.size() == 0 || dedicatedVmInHost.size() != 0) {
+                                    suitableHosts.add(host);
+                                } else {
+                                    s_logger.debug("Host is not suitable for dedicated instance: " + host.getId());
+                                }
+                            }
                             Pair<Host, Map<Volume, StoragePool>> potentialResources = findPotentialDeploymentResources(suitableHosts, suitableVolumeStoragePools);
                             if(potentialResources != null){
                                 Pod pod = _podDao.findById(host.getPodId());

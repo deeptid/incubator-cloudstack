@@ -80,6 +80,9 @@ public class ServiceOfferingResponse extends BaseResponse {
 
     @SerializedName(ApiConstants.NETWORKRATE) @Param(description="data transfer rate in megabits per second allowed.")
     private Integer networkRate;
+    
+    @SerializedName(ApiConstants.IS_DEDICATED) @Param(description="is this offering dedication")
+    private Boolean isDedicated;
 
 
     public String getId() {
@@ -223,5 +226,13 @@ public class ServiceOfferingResponse extends BaseResponse {
 
     public void setNetworkRate(Integer networkRate) {
         this.networkRate = networkRate;
+    }
+    
+    public Boolean getIsDedicated() {
+        return isDedicated;
+    }
+
+    public void setIsDedicated(Boolean isDedicated) {
+        this.isDedicated = isDedicated;
     }
 }

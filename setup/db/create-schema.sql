@@ -1449,6 +1449,7 @@ CREATE TABLE  `cloud`.`service_offering` (
   `host_tag` varchar(255) COMMENT 'host tag specified by the service_offering',
   `default_use` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT 'is this offering a default system offering',
   `vm_type` varchar(32) COMMENT 'type of offering specified for system offerings',
+  `is_dedicated` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT 'Enable dedication',
   `sort_key` int(32) NOT NULL default 0 COMMENT 'sort key used for customising sort method',
   PRIMARY KEY  (`id`),
   CONSTRAINT `fk_service_offering__id` FOREIGN KEY `fk_service_offering__id`(`id`) REFERENCES `disk_offering`(`id`) ON DELETE CASCADE

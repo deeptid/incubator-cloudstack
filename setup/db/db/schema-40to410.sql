@@ -60,6 +60,8 @@ ALTER TABLE `cloud`.`snapshots` ADD CONSTRAINT `fk_snapshots__s3_id` FOREIGN KEY
 
 ALTER TABLE `cloud`.`network_offerings` ADD COLUMN `inline` int(1) unsigned NOT NULL DEFAULT 0 COMMENT 'Is this network offering LB provider is in inline mode';
 
+ALTER TABLE `cloud`.`service_offering` ADD COLUMN `is_dedicated` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT 'Enable dedication';
+
 ALTER TABLE `cloud`.`external_load_balancer_devices` DROP COLUMN `is_inline`;
 
 INSERT IGNORE INTO `cloud`.`configuration` VALUES ('Network','DEFAULT','NetworkManager','network.dhcp.nondefaultnetwork.setgateway.guestos','Windows','The guest OS\'s name start with this fields would result in DHCP server response gateway information even when the network it\'s on is not default network. Names are separated by comma.');

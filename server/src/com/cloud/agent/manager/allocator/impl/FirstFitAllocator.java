@@ -27,6 +27,7 @@ import javax.naming.ConfigurationException;
 
 import org.apache.log4j.Logger;
 
+import com.amazonaws.services.cloudsearch.model.SearchInstanceType;
 import com.cloud.agent.manager.allocator.HostAllocator;
 import com.cloud.capacity.CapacityManager;
 import com.cloud.configuration.dao.ConfigurationDao;
@@ -42,6 +43,7 @@ import com.cloud.hypervisor.Hypervisor.HypervisorType;
 import com.cloud.hypervisor.dao.HypervisorCapabilitiesDao;
 import com.cloud.offering.ServiceOffering;
 import com.cloud.resource.ResourceManager;
+import com.cloud.service.ServiceOfferingVO;
 import com.cloud.service.dao.ServiceOfferingDao;
 import com.cloud.storage.GuestOSCategoryVO;
 import com.cloud.storage.GuestOSVO;
@@ -52,7 +54,14 @@ import com.cloud.user.Account;
 import com.cloud.utils.NumbersUtil;
 import com.cloud.utils.component.ComponentLocator;
 import com.cloud.utils.component.Inject;
+import com.cloud.utils.db.GenericSearchBuilder;
+import com.cloud.utils.db.JoinBuilder;
+import com.cloud.utils.db.SearchBuilder;
+import com.cloud.utils.db.SearchCriteria;
+import com.cloud.utils.db.SearchCriteria.Op;
+import com.cloud.vm.VMInstanceVO;
 import com.cloud.vm.VirtualMachine;
+import com.cloud.vm.VirtualMachine.State;
 import com.cloud.vm.VirtualMachineProfile;
 import com.cloud.vm.dao.ConsoleProxyDao;
 import com.cloud.vm.dao.DomainRouterDao;
@@ -222,7 +231,24 @@ public class FirstFitAllocator implements HostAllocator {
                 if (s_logger.isDebugEnabled()) {
                     s_logger.debug("Found a suitable host, adding to list: " + host.getId());
                 }
-                suitableHosts.add(host);
+                List<Long> dedicatedVmInHost = _vmInstanceDao.listDedicatedVmInHost(host.getId(), null);
+                if (offering.getIsDedicated() == false) {
+                    if (dedicatedVmInHost == null || dedicatedVmInHost.size() == 0) {
+                        suitableHosts.add(host);
+                    } else {
+                        s_logger.debug("Host has dedicated instances, cannot be added to the list: " + host.getId());
+                    }
+                } else {
+                    dedicatedVmInHost = _vmInstanceDao.listDedicatedVmInHost(host.getId(), account.getId());
+                    //check if host is empty or has dedicated vms of same account
+                    List<VMInstanceVO> result = _vmInstanceDao.checkHostIsEmpty(host.getId());
+                    if (result == null || result.size() == 0 || dedicatedVmInHost.size() != 0) {
+                        suitableHosts.add(host);
+                    } else {
+                        s_logger.debug("Host is not suitable for dedicated instance: " + host.getId());
+                    }
+                }
+                //suitableHosts.add(host);
             } else {
                 if (s_logger.isDebugEnabled()) {
                     s_logger.debug("Not using host " + host.getId() + "; numCpusGood: " + numCpusGood + "; cpuFreqGood: " + cpuFreqGood + ", host has capacity?" + hostHasCapacity);
@@ -236,6 +262,8 @@ public class FirstFitAllocator implements HostAllocator {
         
         return suitableHosts;
     }
+    
+   
 
     private List<HostVO> reorderHostsByNumberOfVms(DeploymentPlan plan, List<HostVO> hosts, Account account) {
         if(account == null){

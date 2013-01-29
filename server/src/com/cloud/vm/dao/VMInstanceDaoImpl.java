@@ -33,6 +33,8 @@ import org.apache.log4j.Logger;
 import com.cloud.host.HostVO;
 import com.cloud.host.dao.HostDaoImpl;
 import com.cloud.server.ResourceTag.TaggedResourceType;
+import com.cloud.service.ServiceOfferingVO;
+import com.cloud.service.dao.ServiceOfferingDaoImpl;
 import com.cloud.tags.dao.ResourceTagsDaoImpl;
 import com.cloud.utils.Pair;
 import com.cloud.utils.component.ComponentLocator;
@@ -74,14 +76,17 @@ public class VMInstanceDaoImpl extends GenericDaoBase<VMInstanceVO, Long> implem
     protected final SearchBuilder<VMInstanceVO> HostIdTypesSearch;
     protected final SearchBuilder<VMInstanceVO> HostIdUpTypesSearch;
     protected final SearchBuilder<VMInstanceVO> HostUpSearch;
+    protected final SearchBuilder<VMInstanceVO> EmptyHostSearch;
     protected final GenericSearchBuilder<VMInstanceVO, Long> CountVirtualRoutersByAccount;
     protected GenericSearchBuilder<VMInstanceVO, Long> CountRunningByHost;
     protected GenericSearchBuilder<VMInstanceVO, Long> CountRunningByAccount;
     protected SearchBuilder<VMInstanceVO> NetworkTypeSearch;
     protected GenericSearchBuilder<VMInstanceVO, String> DistinctHostNameSearch;
+    protected GenericSearchBuilder<VMInstanceVO, Long> DedicatedVmSearch;
     
     ResourceTagsDaoImpl _tagsDao = ComponentLocator.inject(ResourceTagsDaoImpl.class);
     NicDao _nicDao = ComponentLocator.inject(NicDaoImpl.class);
+    ServiceOfferingDaoImpl _offeringDao = ComponentLocator.inject(ServiceOfferingDaoImpl.class);
 
     protected final Attribute _updateTimeAttr;
     
@@ -156,6 +161,11 @@ public class VMInstanceDaoImpl extends GenericDaoBase<VMInstanceVO, Long> implem
         TypesSearch = createSearchBuilder();
         TypesSearch.and("types", TypesSearch.entity().getType(), Op.IN);
         TypesSearch.done();
+        
+        EmptyHostSearch = createSearchBuilder();
+        EmptyHostSearch.and("hostId", EmptyHostSearch.entity().getHostId(), Op.EQ);
+        EmptyHostSearch.and("type", EmptyHostSearch.entity().getType(), Op.EQ);
+        EmptyHostSearch.done();
 
         IdTypesSearch = createSearchBuilder();
         IdTypesSearch.and("id", IdTypesSearch.entity().getId(), Op.EQ);
@@ -605,5 +615,37 @@ public class VMInstanceDaoImpl extends GenericDaoBase<VMInstanceVO, Long> implem
         boolean result = super.remove(id);
         txn.commit();
         return result;
+    }
+    
+    @Override
+    public List<Long> listDedicatedVmInHost(Long hostId, Long accountId) {
+        DedicatedVmSearch = createSearchBuilder(Long.class);
+        SearchBuilder<ServiceOfferingVO> offeringSearch = _offeringDao.createSearchBuilder();
+        DedicatedVmSearch.selectField(DedicatedVmSearch.entity().getId());
+        DedicatedVmSearch.and("hostId", DedicatedVmSearch.entity().getHostId(),Op.EQ);
+        if (accountId != null) {
+            DedicatedVmSearch.and("accountId", DedicatedVmSearch.entity().getAccountId(),Op.EQ);
+        }
+        DedicatedVmSearch.and("state", DedicatedVmSearch.entity().getState(), Op.NIN);
+        offeringSearch.and("isDedicated", offeringSearch.entity().getIsDedicated(),Op.EQ);
+        DedicatedVmSearch.join("dedicatedVm", offeringSearch, DedicatedVmSearch.entity().getServiceOfferingId(), offeringSearch.entity().getId(), JoinBuilder.JoinType.INNER);
+        DedicatedVmSearch.done();
+
+        SearchCriteria<Long> sc = DedicatedVmSearch.create();
+        sc.setParameters("hostId", hostId);
+        if (accountId != null) {
+            sc.setParameters("accountId", accountId);
+        }
+        sc.setJoinParameters("dedicatedVm", "isDedicated", true);
+        sc.setParameters("state", new Object[] {State.Destroyed, State.Expunging, State.Error});
+        return customSearch(sc, null);
+     }
+    
+    @Override
+    public List<VMInstanceVO> checkHostIsEmpty(Long hostId) {
+        SearchCriteria<VMInstanceVO> sc = EmptyHostSearch.create();
+        sc.setParameters("hostId", hostId);
+        sc.setParameters("type", "User");
+        return listBy(sc);
     }
 }
