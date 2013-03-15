@@ -151,6 +151,7 @@ DROP TABLE IF EXISTS `cloud`.`s3`;
 DROP TABLE IF EXISTS `cloud`.`template_s3_ref`;
 DROP TABLE IF EXISTS `cloud`.`nicira_nvp_router_map`;
 DROP TABLE IF EXISTS `cloud`.`external_bigswitch_vns_devices`;
+DROP TABLE IF EXISTS `cloud`,`dedicated_resources`;
 DROP TABLE IF EXISTS `cloud`.`autoscale_vmgroup_policy_map`;
 DROP TABLE IF EXISTS `cloud`.`autoscale_policy_condition_map`;
 DROP TABLE IF EXISTS `cloud`.`autoscale_vmgroups`;
@@ -367,7 +368,7 @@ CREATE TABLE `cloud`.`cluster` (
   `removed` datetime COMMENT 'date removed if not null',
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_cluster__data_center_id` FOREIGN KEY (`data_center_id`) REFERENCES `cloud`.`data_center`(`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_cluster__pod_id` FOREIGN KEY (`pod_id`) REFERENCES `cloud`.`host_pod_ref`(`id`),
+  CONSTRAINT `fk_cluster__pod_id` FOREIGN KEY (`pod_id`) REFERENCES `cloud`.`host_pod_ref`(`id`),  
   UNIQUE `i_cluster__pod_id__name`(`pod_id`, `name`),
   INDEX `i_cluster__allocation_state`(`allocation_state`),
   INDEX `i_cluster__removed`(`removed`),
@@ -671,6 +672,28 @@ CREATE TABLE `cloud`.`op_dc_storage_network_ip_address` (
   `taken` datetime COMMENT 'Date taken',
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_storage_ip_address__range_id` FOREIGN KEY (`range_id`) REFERENCES `dc_storage_network_ip_range`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `cloud`.`dedicated_resources` (
+  `id` bigint unsigned NOT NULL UNIQUE AUTO_INCREMENT COMMENT 'id',
+  `uuid` varchar(40),
+  `data_center_id` bigint unsigned COMMENT 'data center id',
+  `pod_id` bigint unsigned COMMENT 'pod id',
+  `cluster_id` bigint unsigned COMMENT 'cluster id', 
+  `host_id` bigint unsigned COMMENT 'cluster id',
+  `domain_id` bigint unsigned COMMENT 'domain id of the domain to which cluster belongs (null signifies public )',
+  `account_id` bigint unsigned COMMENT 'account id of the account to which cluster belongs (null signifies public  or domain specific pods)',
+  `implicit_dedication` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT 'Enable implicit dedication',
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_dedicated_resources__data_center_id` FOREIGN KEY (`data_center_id`) REFERENCES `cloud`.`data_center`(`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_dedicated_resources__pod_id` FOREIGN KEY (`pod_id`) REFERENCES `cloud`.`host_pod_ref`(`id`), 
+  CONSTRAINT `fk_dedicated_resources__cluster_id` FOREIGN KEY (`cluster_id`) REFERENCES `cloud`.`cluster`(`id`),
+  CONSTRAINT `fk_dedicated_resources__host_id` FOREIGN KEY (`host_id`) REFERENCES `cloud`.`host`(`id`),  
+  CONSTRAINT `fk_dedicated_resources__domain_id` FOREIGN KEY (`domain_id`) REFERENCES `domain`(`id`),
+  CONSTRAINT `fk_dedicated_resources__account_id` FOREIGN KEY (`account_id`) REFERENCES `account`(`id`),
+  INDEX `i_dedicated_resources_domain_id`(`domain_id`),
+  INDEX `i_dedicated_resources_account_id`(`account_id`),
+  CONSTRAINT `uc_dedicated_resources__uuid` UNIQUE (`uuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE  `cloud`.`host_pod_ref` (
@@ -1095,6 +1118,7 @@ CREATE TABLE  `cloud`.`vm_instance` (
   `proxy_assign_time` DATETIME NULL COMMENT 'time when console proxy was assigned',
   `vnc_password` varchar(255) NOT NULL COMMENT 'vnc password',
   `ha_enabled` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'Should HA be enabled for this VM',
+  `use_dedication` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'VM is deployed in dedicated resource',
   `limit_cpu_use` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT 'Limit the cpu usage to service offering',
   `update_count` bigint unsigned NOT NULL DEFAULT 0 COMMENT 'date state was updated',
   `update_time` datetime COMMENT 'date the destroy was requested',
@@ -1515,6 +1539,7 @@ CREATE TABLE  `cloud`.`service_offering` (
   `default_use` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT 'is this offering a default system offering',
   `vm_type` varchar(32) COMMENT 'type of offering specified for system offerings',
   `sort_key` int(32) NOT NULL default 0 COMMENT 'sort key used for customising sort method',
+  `implicit_dedication` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT 'Enable implicit dediaction',
   PRIMARY KEY  (`id`),
   CONSTRAINT `fk_service_offering__id` FOREIGN KEY `fk_service_offering__id`(`id`) REFERENCES `disk_offering`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -2452,7 +2477,6 @@ CREATE TABLE `cloud`.`resource_tags` (
   UNIQUE `i_tags__resource_id__resource_type__key`(`resource_id`, `resource_type`, `key`),
   CONSTRAINT `uc_resource_tags__uuid` UNIQUE (`uuid`)
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 
 CREATE TABLE `cloud`.`external_nicira_nvp_devices` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',

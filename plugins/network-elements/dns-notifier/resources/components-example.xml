@@ -167,6 +167,7 @@ under the License.
         <pluggableservice name="ApiDiscoveryService" key="org.apache.cloudstack.discovery.ApiDiscoveryService" class="org.apache.cloudstack.discovery.ApiDiscoveryServiceImpl"/>
         <pluggableservice name="VirtualRouterElementService" key="com.cloud.network.element.VirtualRouterElementService" class="com.cloud.network.element.VirtualRouterElement"/>
         <pluggableservice name="NiciraNvpElementService" key="com.cloud.network.element.NiciraNvpElementService" class="com.cloud.network.element.NiciraNvpElement"/>
+        <pluggableservice name="DedicatedService" key="com.cloud.service.DedicatedService" class="com.cloud.manager.DedicatedResourceManagerImpl"/>
         <dao name="OvsTunnelInterfaceDao" class="com.cloud.network.ovs.dao.OvsTunnelInterfaceDaoImpl" singleton="false"/>
         <dao name="OvsTunnelAccountDao" class="com.cloud.network.ovs.dao.OvsTunnelNetworkDaoImpl" singleton="false"/>
         <dao name="NiciraNvpDao" class="com.cloud.network.dao.NiciraNvpDaoImpl" singleton="false"/>
@@ -184,6 +185,7 @@ under the License.
         <dao name="ServiceOffering configuration server" class="com.cloud.service.dao.ServiceOfferingDaoImpl" singleton="false"/>
         <dao name="host zone configuration server" class="com.cloud.dc.dao.DataCenterDaoImpl" singleton="false"/>
         <dao name="host pod configuration server" class="com.cloud.dc.dao.HostPodDaoImpl" singleton="false"/>
+        <dao name="DedicatedResourceDao" class="com.cloud.dc.dao.DedicatedResourceDaoImpl" singleton="false"/>
         <dao name="DomainDao" class="com.cloud.domain.dao.DomainDaoImpl" singleton="false"/>
         <dao name="NetworkOfferingDao" class="com.cloud.offerings.dao.NetworkOfferingDaoImpl" singleton="false"/>
         <dao name="DataCenterDao" class="com.cloud.dc.dao.DataCenterDaoImpl" singleton="false"/>
