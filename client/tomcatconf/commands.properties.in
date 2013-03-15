@@ -588,3 +588,16 @@ addCiscoAsa1000vResource=1
 deleteCiscoAsa1000vResource=1
 listCiscoAsa1000vResources=1
 
+#### Dedicated Resource commands
+dedicateZone=1
+dedicatePod=1
+dedicateCluster=1
+dedicateHost=1
+releaseDedicatedZone=1
+releaseDedicatedPod=1
+releaseDedicatedCluster=1
+releaseDedicatedHost=1
+listDedicatedZones=1
+listDedicatedPods=1
+listDedicatedClusters=1
+listDedicatedHosts=1

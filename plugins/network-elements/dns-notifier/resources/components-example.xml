@@ -126,6 +126,10 @@ under the License.
             <adapter name="BareMetal Fit" class="com.cloud.deploy.BareMetalPlanner"/>
             -->
         </adapters>
+        <adapters key="org.apache.cloudstack.affinity.AffinityGroupProcessor">
+            <adapter name="HostAntiAffinity" class="org.apache.cloudstack.affinity.HostAntiAffinityProcessor"/>
+            <adapter name="ExplicitDedication" class="org.apache.cloudstack.affinity.ExplicitDedicationProcessor"/>
+        </adapters>
         <adapters key="com.cloud.alert.AlertAdapter">
             <adapter name="ClusterAlert" class="com.cloud.alert.ClusterAlertAdapter"/>
             <adapter name="ConsoleProxyAlert" class="com.cloud.alert.ConsoleProxyAlertAdapter"/>
@@ -167,6 +171,7 @@ under the License.
         <pluggableservice name="ApiDiscoveryService" key="org.apache.cloudstack.discovery.ApiDiscoveryService" class="org.apache.cloudstack.discovery.ApiDiscoveryServiceImpl"/>
         <pluggableservice name="VirtualRouterElementService" key="com.cloud.network.element.VirtualRouterElementService" class="com.cloud.network.element.VirtualRouterElement"/>
         <pluggableservice name="NiciraNvpElementService" key="com.cloud.network.element.NiciraNvpElementService" class="com.cloud.network.element.NiciraNvpElement"/>
+        <pluggableservice name="DedicatedService" key="com.cloud.service.DedicatedService" class="com.cloud.manager.DedicatedResourceManagerImpl"/>
         <dao name="OvsTunnelInterfaceDao" class="com.cloud.network.ovs.dao.OvsTunnelInterfaceDaoImpl" singleton="false"/>
         <dao name="OvsTunnelAccountDao" class="com.cloud.network.ovs.dao.OvsTunnelNetworkDaoImpl" singleton="false"/>
         <dao name="NiciraNvpDao" class="com.cloud.network.dao.NiciraNvpDaoImpl" singleton="false"/>
@@ -184,6 +189,7 @@ under the License.
         <dao name="ServiceOffering configuration server" class="com.cloud.service.dao.ServiceOfferingDaoImpl" singleton="false"/>
         <dao name="host zone configuration server" class="com.cloud.dc.dao.DataCenterDaoImpl" singleton="false"/>
         <dao name="host pod configuration server" class="com.cloud.dc.dao.HostPodDaoImpl" singleton="false"/>
+        <dao name="DedicatedResourceDao" class="com.cloud.dc.dao.DedicatedResourceDaoImpl" singleton="false"/>
         <dao name="DomainDao" class="com.cloud.domain.dao.DomainDaoImpl" singleton="false"/>
         <dao name="NetworkOfferingDao" class="com.cloud.offerings.dao.NetworkOfferingDaoImpl" singleton="false"/>
         <dao name="DataCenterDao" class="com.cloud.dc.dao.DataCenterDaoImpl" singleton="false"/>
@@ -207,6 +213,7 @@ under the License.
         <dao name="CloudStackSvcOfferingDao" class="com.cloud.bridge.persist.dao.CloudStackSvcOfferingDaoImpl" singleton="false"/>
         <dao name="OfferingDao" class="com.cloud.bridge.persist.dao.OfferingDaoImpl" singleton="false"/>
         <dao name="CloudStackAccountDao" class="com.cloud.bridge.persist.dao.CloudStackAccountDaoImpl" singleton="false"/>
+        <dao name="CloudStackUserDao" class="com.cloud.bridge.persist.dao.CloudStackUserDaoImpl" singleton="false"/>
     </awsapi-ec2server>
     
     <awsapi-s3server class="com.cloud.bridge.service.S3RestServlet">

@@ -151,6 +151,7 @@ DROP TABLE IF EXISTS `cloud`.`s3`;
 DROP TABLE IF EXISTS `cloud`.`template_s3_ref`;
 DROP TABLE IF EXISTS `cloud`.`nicira_nvp_router_map`;
 DROP TABLE IF EXISTS `cloud`.`external_bigswitch_vns_devices`;
+DROP TABLE IF EXISTS `cloud`,`dedicated_resources`;
 DROP TABLE IF EXISTS `cloud`.`autoscale_vmgroup_policy_map`;
 DROP TABLE IF EXISTS `cloud`.`autoscale_policy_condition_map`;
 DROP TABLE IF EXISTS `cloud`.`autoscale_vmgroups`;
@@ -367,7 +368,7 @@ CREATE TABLE `cloud`.`cluster` (
   `removed` datetime COMMENT 'date removed if not null',
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_cluster__data_center_id` FOREIGN KEY (`data_center_id`) REFERENCES `cloud`.`data_center`(`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_cluster__pod_id` FOREIGN KEY (`pod_id`) REFERENCES `cloud`.`host_pod_ref`(`id`),
+  CONSTRAINT `fk_cluster__pod_id` FOREIGN KEY (`pod_id`) REFERENCES `cloud`.`host_pod_ref`(`id`),  
   UNIQUE `i_cluster__pod_id__name`(`pod_id`, `name`),
   INDEX `i_cluster__allocation_state`(`allocation_state`),
   INDEX `i_cluster__removed`(`removed`),
@@ -2452,7 +2453,6 @@ CREATE TABLE `cloud`.`resource_tags` (
   UNIQUE `i_tags__resource_id__resource_type__key`(`resource_id`, `resource_type`, `key`),
   CONSTRAINT `uc_resource_tags__uuid` UNIQUE (`uuid`)
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 
 CREATE TABLE `cloud`.`external_nicira_nvp_devices` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
