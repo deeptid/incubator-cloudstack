@@ -21,9 +21,11 @@ import java.util.List;
 import com.cloud.api.commands.ListDedicatedClustersCmd;
 import com.cloud.api.commands.ListDedicatedHostsCmd;
 import com.cloud.api.commands.ListDedicatedPodsCmd;
+import com.cloud.api.commands.ListDedicatedZonesCmd;
 import com.cloud.api.response.DedicateClusterResponse;
 import com.cloud.api.response.DedicateHostResponse;
 import com.cloud.api.response.DedicatePodResponse;
+import com.cloud.api.response.DedicateZoneResponse;
 import com.cloud.dc.DedicatedResourceVO;
 import com.cloud.dc.DedicatedResources;
 import com.cloud.utils.component.PluggableService;
@@ -52,5 +54,9 @@ public interface DedicatedService extends PluggableService{
             Long clusterId, Long hostId, Long domainId, Long accountId, Boolean implicit);
 
     boolean releaseDedicatedResource(Long zoneId, Long podId, Long clusterId, Long hostId);
+
+    DedicateZoneResponse createDedicateZoneResponse(DedicatedResources resource);
+
+    List<DedicatedResourceVO> listDedicatedZones(ListDedicatedZonesCmd cmd);
 
 }

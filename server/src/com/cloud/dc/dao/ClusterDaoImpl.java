@@ -90,7 +90,7 @@ public class ClusterDaoImpl extends GenericDaoBase<ClusterVO, Long> implements C
     @Override
     public List<ClusterVO> listByZoneId(long zoneId) {
         SearchCriteria<ClusterVO> sc = ZoneSearch.create();
-        sc.setParameters("dataCenterId", zoneId);        
+        sc.setParameters("dataCenterId", zoneId);
         return listBy(sc);
     }
 

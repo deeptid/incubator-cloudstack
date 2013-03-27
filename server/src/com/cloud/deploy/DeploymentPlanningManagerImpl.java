@@ -26,6 +26,7 @@ import org.apache.cloudstack.affinity.AffinityGroupVMMapVO;
 import org.apache.cloudstack.affinity.dao.AffinityGroupDao;
 import org.apache.cloudstack.affinity.dao.AffinityGroupVMMapDao;
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Component;
 
 import com.cloud.deploy.DeploymentPlanner.ExcludeList;
 import com.cloud.exception.AffinityConflictException;
@@ -37,6 +38,7 @@ import com.cloud.vm.VirtualMachineProfile;
 import com.cloud.vm.dao.UserVmDao;
 import com.cloud.vm.dao.VMInstanceDao;
 
+@Component
 @Local(value = { DeploymentPlanningManager.class })
 public class DeploymentPlanningManagerImpl extends ManagerBase implements DeploymentPlanningManager, Manager {
 

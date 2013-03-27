@@ -35,6 +35,7 @@ import org.apache.cloudstack.api.response.ZoneResponse;
 import org.apache.log4j.Logger;
 
 import com.cloud.api.response.DedicatePodResponse;
+import com.cloud.api.response.DedicateZoneResponse;
 import com.cloud.dc.DedicatedResources;
 
 import com.cloud.services.DedicatedService;
@@ -44,7 +45,7 @@ import com.cloud.user.Account;
 public class DedicateZoneCmd extends BaseCmd {
     public static final Logger s_logger = Logger.getLogger(DedicateZoneCmd.class.getName());
 
-    private static final String s_name = "dedicatepodresponse";
+    private static final String s_name = "dedicatezoneresponse";
     @Inject public DedicatedService _dedicatedservice;
 
     /////////////////////////////////////////////////////
@@ -101,14 +102,14 @@ public class DedicateZoneCmd extends BaseCmd {
     @Override
     public void execute(){
         List<? extends DedicatedResources> result = _dedicatedservice.dedicateResource(getZoneId(), null, null, null, getDomainId(), getAccountId(), getImplcitDedication());
-        ListResponse<DedicatePodResponse> response = new ListResponse<DedicatePodResponse>();
-        List<DedicatePodResponse> podResponseList = new ArrayList<DedicatePodResponse>();
+        ListResponse<DedicateZoneResponse> response = new ListResponse<DedicateZoneResponse>();
+        List<DedicateZoneResponse> zoneResponseList = new ArrayList<DedicateZoneResponse>();
         if (result != null) {
             for (DedicatedResources resource : result) {
-                DedicatePodResponse podresponse = _dedicatedservice.createDedicatePodResponse(resource);
-                podResponseList.add(podresponse);
+                DedicateZoneResponse zoneresponse = _dedicatedservice.createDedicateZoneResponse(resource);
+                zoneResponseList.add(zoneresponse);
             }
-            response.setResponses(podResponseList);
+            response.setResponses(zoneResponseList);
             response.setResponseName(getCommandName());
             this.setResponseObject(response);
         } else {

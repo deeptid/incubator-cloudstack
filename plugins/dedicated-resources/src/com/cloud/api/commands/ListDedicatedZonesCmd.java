@@ -93,7 +93,7 @@ public class ListDedicatedZonesCmd extends BaseListCmd {
 
     @Override
     public void execute(){
-        List<? extends DedicatedResources> result = _dedicatedservice.listDedicatedPods(this);
+        List<? extends DedicatedResources> result = _dedicatedservice.listDedicatedZones(this);
         ListResponse<DedicatePodResponse> response = new ListResponse<DedicatePodResponse>();
         List<DedicatePodResponse> Responses = new ArrayList<DedicatePodResponse>();
         if (result != null) {

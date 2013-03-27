@@ -86,6 +86,7 @@ public class HostDaoImpl extends GenericDaoBase<HostVO, Long> implements HostDao
     protected SearchBuilder<HostVO> GuidSearch;
     protected SearchBuilder<HostVO> DcSearch;
     protected SearchBuilder<HostVO> PodSearch;
+    protected SearchBuilder<HostVO> ClusterSearch;
     protected SearchBuilder<HostVO> TypeSearch;
     protected SearchBuilder<HostVO> StatusSearch;
     protected SearchBuilder<HostVO> ResourceStateSearch;
@@ -215,8 +216,12 @@ public class HostDaoImpl extends GenericDaoBase<HostVO, Long> implements HostDao
         TypeNameZoneSearch.done();
 
         PodSearch = createSearchBuilder();
-        PodSearch.and("pod", PodSearch.entity().getPodId(), SearchCriteria.Op.EQ);
+        PodSearch.and("podId", PodSearch.entity().getPodId(), SearchCriteria.Op.EQ);
         PodSearch.done();
+
+        ClusterSearch = createSearchBuilder();
+        ClusterSearch.and("clusterId", ClusterSearch.entity().getClusterId(), SearchCriteria.Op.EQ);
+        ClusterSearch.done();
 
         TypeSearch = createSearchBuilder();
         TypeSearch.and("type", TypeSearch.entity().getType(), SearchCriteria.Op.EQ);
@@ -904,6 +909,20 @@ public class HostDaoImpl extends GenericDaoBase<HostVO, Long> implements HostDao
         sc.setParameters("name", name);
         sc.setParameters("zoneId", zoneId);
         return findOneBy(sc);
+    }
+
+    @Override
+    public List<HostVO> findByPodId(Long podId) {
+        SearchCriteria<HostVO> sc = PodSearch.create();
+        sc.setParameters("podId", podId);
+        return listBy(sc);
+    }
+
+    @Override
+    public List<HostVO> findByClusterId(Long clusterId) {
+        SearchCriteria<HostVO> sc = ClusterSearch.create();
+        sc.setParameters("clusterId", clusterId);
+        return listBy(sc);
     }
 
     @Override

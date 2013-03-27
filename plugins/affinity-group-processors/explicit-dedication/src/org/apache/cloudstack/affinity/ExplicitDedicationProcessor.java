@@ -25,11 +25,21 @@ import org.apache.cloudstack.affinity.dao.AffinityGroupDao;
 import org.apache.cloudstack.affinity.dao.AffinityGroupVMMapDao;
 import org.apache.log4j.Logger;
 
+import com.cloud.dc.ClusterVO;
+import com.cloud.dc.DataCenter;
+import com.cloud.dc.DedicatedResourceVO;
+import com.cloud.dc.HostPodVO;
+import com.cloud.dc.dao.ClusterDao;
+import com.cloud.dc.dao.DataCenterDao;
+import com.cloud.dc.dao.DedicatedResourceDao;
+import com.cloud.dc.dao.HostPodDao;
 import com.cloud.deploy.DeploymentPlan;
 import com.cloud.deploy.DeploymentPlanner.ExcludeList;
 import com.cloud.exception.AffinityConflictException;
+import com.cloud.host.HostVO;
+import com.cloud.host.dao.HostDao;
 import com.cloud.utils.component.AdapterBase;
-import com.cloud.vm.VMInstanceVO;
+import com.cloud.utils.exception.CloudRuntimeException;
 import com.cloud.vm.VirtualMachine;
 import com.cloud.vm.VirtualMachineProfile;
 import com.cloud.vm.dao.UserVmDao;
@@ -47,31 +57,99 @@ public class ExplicitDedicationProcessor extends AdapterBase implements Affinity
     protected AffinityGroupDao _affinityGroupDao;
     @Inject
     protected AffinityGroupVMMapDao _affinityGroupVMMapDao;
+    @Inject
+    protected DataCenterDao _dcDao;
+    @Inject 
+    protected DedicatedResourceDao _dedicatedDao;
+    @Inject 
+    protected HostPodDao _podDao;
+    @Inject 
+    protected ClusterDao _clusterDao;
+    @Inject 
+    protected HostDao _hostDao;
 
     @Override
     public void process(VirtualMachineProfile<? extends VirtualMachine> vmProfile, DeploymentPlan plan,
             ExcludeList avoid)
             throws AffinityConflictException {
         VirtualMachine vm = vmProfile.getVirtualMachine();
+        DataCenter dc = _dcDao.findById(vm.getDataCenterId());
+        long domainId = vm.getDomainId();
+        long accountId = vm.getAccountId();
         AffinityGroupVMMapVO vmGroupMapping = _affinityGroupVMMapDao.findByVmIdType(vm.getId(), getType());
 
         if (vmGroupMapping != null) {
             AffinityGroupVO group = _affinityGroupDao.findById(vmGroupMapping.getAffinityGroupId());
-
             if (s_logger.isDebugEnabled()) {
-                s_logger.debug("Processing affinity group " + group.getName() + " for VM Id: " + vm.getId());
+                s_logger.debug("Processing affinity group " + group.getName() + " of type: " + group.getType() + " for VM Id: " + vm.getId());
             }
-
-            List<Long> groupVMIds = _affinityGroupVMMapDao.listVmIdsByAffinityGroup(group.getId());
-
-            for (Long groupVMId : groupVMIds) {
-                VMInstanceVO groupVM = _vmInstanceDao.findById(groupVMId);
-                if (groupVM != null && !groupVM.isRemoved() && groupVM.getHostId() != null) {
-                    avoid.addHost(groupVM.getHostId());
+            DedicatedResourceVO dedicatedZone = _dedicatedDao.findByZoneId(dc.getId());
+            if (dedicatedZone != null){
+                //check if zone is implicitly dedicated
+                if (dedicatedZone.getImplicitDedication() == true || dedicatedZone.getDomainId() == domainId || dedicatedZone.getAccountId() == accountId) {
+                    throw new CloudRuntimeException("Zone cannot be used for explicit dedication.");
                 }
             }
-        }
+            //add every thing in avoidList under this Zone
+            List<HostPodVO> pods = _podDao.listByDataCenterId(dc.getId());
+            List<ClusterVO> clusters = _clusterDao.listByZoneId(dc.getId());
+            List<HostVO> hosts = _hostDao.listAllUpAndEnabledNonHAHosts(null, null, null, dc.getId(), null);
+            for (HostPodVO pod : pods){
+                avoid.addPod(pod.getId());
+            }
+            for (ClusterVO cluster : clusters) {
+                avoid.addCluster(cluster.getId());
+            }
+            for (HostVO host : hosts) {
+                avoid.addHost(host.getId());
+            }
 
+            //Remove Dedicated Resources form Avoid List
+            List<DedicatedResourceVO> dedicatedPodsByAccount = _dedicatedDao.findPodsByAccountId(accountId);
+            List<DedicatedResourceVO> dedicatedPodsByDomain = _dedicatedDao.findPodsByDomainId(domainId);
+            dedicatedPodsByAccount.addAll(dedicatedPodsByDomain);
+            if (dedicatedPodsByAccount.size() != 0 || dedicatedPodsByAccount != null){
+                for (DedicatedResourceVO dedicatedPod : dedicatedPodsByAccount){
+                    //remove dedicated pod from the Avoid list
+                    avoid.removePod(dedicatedPod.getPodId());
+                    // remove all resources under this Pod from the Avoid list
+                    List<ClusterVO> clustersInPod = _clusterDao.listByPodId(dedicatedPod.getPodId());
+                    for (ClusterVO cluster : clustersInPod){
+                        avoid.removeCluster(cluster.getId());
+                    }
+                    List<HostVO> hostsInPod = _hostDao.findByPodId(dedicatedPod.getPodId());
+                    for (HostVO host: hostsInPod){
+                        avoid.removeHost(host.getId());
+                    }
+                }
+            }
+
+            List<DedicatedResourceVO> dedicatedClustersByAccount = _dedicatedDao.findClustersByAccountId(accountId);
+            List<DedicatedResourceVO> dedicatedClustersByDomain = _dedicatedDao.findClustersByDomainId(domainId);
+            dedicatedClustersByAccount.addAll(dedicatedClustersByDomain);
+            if (dedicatedClustersByAccount.size() != 0 || dedicatedClustersByAccount != null){
+                for (DedicatedResourceVO dedicatedCluster : dedicatedClustersByAccount){
+                    //remove dedicated cluster from the Avoid list
+                    avoid.removeCluster(dedicatedCluster.getClusterId());
+                    // remove all resources under this Cluster from the Avoid list
+                    List<HostVO> hostsInCluster = _hostDao.findByClusterId(dedicatedCluster.getClusterId());
+                    for (HostVO host: hostsInCluster){
+                        avoid.removeHost(host.getId());
+                    }
+                }
+            }
+
+            List<DedicatedResourceVO> dedicatedHostsByAccount = _dedicatedDao.findHostsByAccountId(accountId);
+            List<DedicatedResourceVO> dedicatedHostsByDomain = _dedicatedDao.findHostsByDomainId(domainId);
+            dedicatedHostsByAccount.addAll(dedicatedHostsByDomain);
+            if (dedicatedHostsByAccount.size() != 0 || dedicatedHostsByAccount != null){
+                for (DedicatedResourceVO dedicatedHost : dedicatedHostsByAccount){
+                    //remove all dedicated host from the AvoidList
+                    avoid.removeHost(dedicatedHost.getHostId());
+                }
+            }
+
+        }
     }
 
     @Override

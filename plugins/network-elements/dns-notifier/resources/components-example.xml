@@ -126,6 +126,10 @@ under the License.
             <adapter name="BareMetal Fit" class="com.cloud.deploy.BareMetalPlanner"/>
             -->
         </adapters>
+        <adapters key="org.apache.cloudstack.affinity.AffinityGroupProcessor">
+            <adapter name="HostAntiAffinity" class="org.apache.cloudstack.affinity.HostAntiAffinityProcessor"/>
+            <adapter name="ExplicitDedication" class="org.apache.cloudstack.affinity.ExplicitDedicationProcessor"/>
+        </adapters>
         <adapters key="com.cloud.alert.AlertAdapter">
             <adapter name="ClusterAlert" class="com.cloud.alert.ClusterAlertAdapter"/>
             <adapter name="ConsoleProxyAlert" class="com.cloud.alert.ConsoleProxyAlertAdapter"/>
@@ -209,6 +213,7 @@ under the License.
         <dao name="CloudStackSvcOfferingDao" class="com.cloud.bridge.persist.dao.CloudStackSvcOfferingDaoImpl" singleton="false"/>
         <dao name="OfferingDao" class="com.cloud.bridge.persist.dao.OfferingDaoImpl" singleton="false"/>
         <dao name="CloudStackAccountDao" class="com.cloud.bridge.persist.dao.CloudStackAccountDaoImpl" singleton="false"/>
+        <dao name="CloudStackUserDao" class="com.cloud.bridge.persist.dao.CloudStackUserDaoImpl" singleton="false"/>
     </awsapi-ec2server>
     
     <awsapi-s3server class="com.cloud.bridge.service.S3RestServlet">

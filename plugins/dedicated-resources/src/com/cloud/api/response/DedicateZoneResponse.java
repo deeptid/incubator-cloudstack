@@ -24,12 +24,12 @@ import com.cloud.serializer.Param;
 import com.google.gson.annotations.SerializedName;
 
 @EntityReference(value = DedicatedResources.class)
-public class DedicatePodResponse extends BaseResponse {
+public class DedicateZoneResponse extends BaseResponse {
     @SerializedName("id") @Param(description="the ID of the dedicated resource")
     private String id;
 
-    @SerializedName("podid") @Param(description="the ID of the Pod")
-    private Long podId;
+    @SerializedName("zoneid") @Param(description="the ID of the Zone")
+    private Long zoneId;
 
     @SerializedName("domainid") @Param(description="the domain ID to which the Pod is dedicated")
     private Long domainId;
@@ -48,12 +48,12 @@ public class DedicatePodResponse extends BaseResponse {
         this.id = id;
     }
 
-    public Long getPodId() {
-        return podId;
+    public Long getZoneId() {
+        return zoneId;
     }
 
-    public void setPodId(Long podId) {
-        this.podId = podId;
+    public void setZoneId(Long zoneId) {
+        this.zoneId = zoneId;
     }
 
     public Long getDomainId() {

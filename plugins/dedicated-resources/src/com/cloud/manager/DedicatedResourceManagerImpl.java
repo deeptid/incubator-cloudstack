@@ -31,12 +31,14 @@ import com.cloud.api.commands.DedicatePodCmd;
 import com.cloud.api.commands.ListDedicatedClustersCmd;
 import com.cloud.api.commands.ListDedicatedHostsCmd;
 import com.cloud.api.commands.ListDedicatedPodsCmd;
+import com.cloud.api.commands.ListDedicatedZonesCmd;
 import com.cloud.api.commands.ReleaseDedicatedClusterCmd;
 import com.cloud.api.commands.ReleaseDedicatedHostCmd;
 import com.cloud.api.commands.ReleaseDedicatedPodCmd;
 import com.cloud.api.response.DedicateClusterResponse;
 import com.cloud.api.response.DedicateHostResponse;
 import com.cloud.api.response.DedicatePodResponse;
+import com.cloud.api.response.DedicateZoneResponse;
 import com.cloud.capacity.dao.CapacityDao;
 import com.cloud.configuration.dao.ConfigurationDao;
 import com.cloud.dc.ClusterDetailsDao;
@@ -208,6 +210,17 @@ public class DedicatedResourceManagerImpl implements DedicatedService {
     }
 
     @Override
+    public DedicateZoneResponse createDedicateZoneResponse(DedicatedResources resource) {
+        DedicateZoneResponse dedicateZoneResponse = new DedicateZoneResponse();
+        dedicateZoneResponse.setId(resource.getUuid());
+        dedicateZoneResponse.setZoneId(resource.getDataCenterId());
+        dedicateZoneResponse.setDomainId(resource.getDomainId());
+        dedicateZoneResponse.setAccountId(resource.getAccountId());
+        dedicateZoneResponse.setObjectName("dedicated zone");
+        return dedicateZoneResponse;
+    }
+
+    @Override
     public DedicatePodResponse createDedicatePodResponse(DedicatedResources resource) {
         DedicatePodResponse dedicatePodResponse = new DedicatePodResponse();
         dedicatePodResponse.setId(resource.getUuid());
@@ -253,6 +266,41 @@ public class DedicatedResourceManagerImpl implements DedicatedService {
         cmdList.add(ReleaseDedicatedHostCmd.class);
         cmdList.add(ReleaseDedicatedPodCmd.class);
         return cmdList;
+    }
+
+    @Override
+    public List<DedicatedResourceVO> listDedicatedZones(ListDedicatedZonesCmd cmd) {
+        List<DedicatedResourceVO> zones = new ArrayList<DedicatedResourceVO>();
+        Long zoneId = cmd.getZoneId();
+        Long domainId = cmd.getDomainId();
+        Long accountId = cmd.getAccountId();
+        Boolean implicit = cmd.getImplicitDedication();
+        DomainVO domain = _domainDao.findById(domainId);
+        AccountVO account = _accountDao.findById(accountId);
+        if (implicit == null) {
+            implicit = false;
+        }
+        if (zoneId != null) {
+            DedicatedResourceVO zone = _dedicatedDao.findByZoneId(zoneId);
+            if (zone != null){
+                zones.add(zone);
+            } else {
+                throw new CloudRuntimeException("Zone with Id " + zoneId + "is not dedicated");
+            }
+        }
+        if (accountId != null) {
+            // for domainId != null
+            // right now, we made the decision to only list pods associated
+            // with this domain/account
+            if (domain != null && domainId == account.getDomainId()) {
+                zones = _dedicatedDao.findZonesByAccountId(accountId);
+            } else {
+                throw new InvalidParameterValueException("Please specify the domain id of the account: " + account.getAccountName());
+            }
+        } else if (domainId != null) {
+            zones = _dedicatedDao.findZonesByDomainId(domainId);
+        }
+        return zones;
     }
 
     @Override

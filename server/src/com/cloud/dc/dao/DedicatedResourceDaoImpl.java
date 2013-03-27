@@ -106,6 +106,11 @@ public class DedicatedResourceDaoImpl extends GenericDaoBase<DedicatedResourceVO
         ListHostsByAccountIdSearch.and("accountId", ListHostsByAccountIdSearch.entity().getAccountId(), SearchCriteria.Op.EQ);
         ListHostsByAccountIdSearch.done();
 
+        ListZonesByImplicitFlagTrue = createSearchBuilder();
+        ListZonesByImplicitFlagTrue.and("zoneId", ListZonesByImplicitFlagTrue.entity().getPodId(), SearchCriteria.Op.NNULL);
+        ListZonesByImplicitFlagTrue.and("implicit", ListZonesByImplicitFlagTrue.entity().getImplicitDedication(), SearchCriteria.Op.EQ);
+        ListZonesByImplicitFlagTrue.done();
+
         ListPodsByImplicitFlagTrue = createSearchBuilder();
         ListPodsByImplicitFlagTrue.and("podId", ListPodsByImplicitFlagTrue.entity().getPodId(), SearchCriteria.Op.NNULL);
         ListPodsByImplicitFlagTrue.and("implicit", ListPodsByImplicitFlagTrue.entity().getImplicitDedication(), SearchCriteria.Op.EQ);
