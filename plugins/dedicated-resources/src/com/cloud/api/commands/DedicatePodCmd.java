@@ -35,6 +35,7 @@ import org.apache.log4j.Logger;
 
 import com.cloud.api.response.DedicatePodResponse;
 import com.cloud.dc.DedicatedResources;
+import com.cloud.event.EventTypes;
 
 import com.cloud.services.DedicatedService;
 import com.cloud.user.Account;

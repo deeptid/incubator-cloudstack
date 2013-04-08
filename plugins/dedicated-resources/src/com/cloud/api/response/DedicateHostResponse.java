@@ -26,13 +26,13 @@ public class DedicateHostResponse extends BaseResponse {
     private String id;
 
     @SerializedName("hostid") @Param(description="the ID of the Pod")
-    private Long hostId;
+    private String hostId;
     
     @SerializedName("domainid") @Param(description="the domain ID of the Pod")
-    private Long domainId;
+    private String domainId;
     
     @SerializedName("accountid") @Param(description="the Account ID of the Pod")
-    private Long accountId;
+    private String accountId;
 
     @SerializedName("implicitDedication") @Param(description="the Account ID of the Pod")
     private Boolean implicitDedication;
@@ -45,27 +45,27 @@ public class DedicateHostResponse extends BaseResponse {
         this.id = id;
     }
 
-    public Long getHostId() {
+    public String getHostId() {
         return hostId;
     }
 
-    public void setHostId(Long hostId) {
+    public void setHostId(String hostId) {
         this.hostId = hostId;
     }
     
-    public Long getDomainId() {
+    public String getDomainId() {
     	return domainId;
     }
     
-    public void setDomainId(Long domainId) {
+    public void setDomainId(String domainId) {
         this.domainId = domainId;    
     }
     
-    public Long getAccountId() {
+    public String getAccountId() {
     	return accountId;
     }
     
-    public void setAccountId(Long accountId) {
+    public void setAccountId(String accountId) {
         this.accountId = accountId;
     }
 

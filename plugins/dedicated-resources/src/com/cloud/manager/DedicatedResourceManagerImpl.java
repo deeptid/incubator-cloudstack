@@ -55,6 +55,8 @@ import com.cloud.org.Grouping.AllocationState;
 import com.cloud.services.DedicatedService;
 import com.cloud.domain.DomainVO;
 import com.cloud.domain.dao.DomainDao;
+import com.cloud.event.ActionEvent;
+import com.cloud.event.EventTypes;
 import com.cloud.exception.InvalidParameterValueException;
 import com.cloud.host.Host;
 import com.cloud.host.HostVO;
@@ -62,6 +64,7 @@ import com.cloud.host.Status;
 import com.cloud.host.dao.HostDao;
 import com.cloud.host.dao.HostTagsDao;
 import com.cloud.user.AccountVO;
+import com.cloud.user.UserContext;
 import com.cloud.user.dao.AccountDao;
 import com.cloud.utils.db.DB;
 import com.cloud.utils.db.Transaction;
@@ -87,8 +90,11 @@ public class DedicatedResourceManagerImpl implements DedicatedService {
 
     @Override
     @DB
+    @ActionEvent(eventType = EventTypes.EVENT_DEDICATE_RESOURCE, eventDescription = "dedicating resource")
     public List<DedicatedResourceVO> dedicateResource(Long zoneId, Long podId, Long clusterId, Long hostId, Long domainId, Long accountId, Boolean implicit) {
         // verify parameters
+        Long userId = UserContext.current().getCallerUserId();
+        
         DomainVO domain = _domainDao.findById(domainId);
         AccountVO account = _accountDao.findById(accountId);
         if (implicit == null) {
@@ -212,10 +218,13 @@ public class DedicatedResourceManagerImpl implements DedicatedService {
     @Override
     public DedicateZoneResponse createDedicateZoneResponse(DedicatedResources resource) {
         DedicateZoneResponse dedicateZoneResponse = new DedicateZoneResponse();
+        DataCenterVO dc = _dcDao.findById(resource.getDataCenterId());
+        DomainVO domain = _domainDao.findById(resource.getDomainId());
+        AccountVO account = _accountDao.findById(resource.getAccountId());
         dedicateZoneResponse.setId(resource.getUuid());
-        dedicateZoneResponse.setZoneId(resource.getDataCenterId());
-        dedicateZoneResponse.setDomainId(resource.getDomainId());
-        dedicateZoneResponse.setAccountId(resource.getAccountId());
+        dedicateZoneResponse.setZoneId(dc.getUuid());
+        dedicateZoneResponse.setDomainId(domain.getUuid());
+        dedicateZoneResponse.setAccountId(account.getUuid());
         dedicateZoneResponse.setObjectName("dedicated zone");
         return dedicateZoneResponse;
     }
@@ -223,10 +232,13 @@ public class DedicatedResourceManagerImpl implements DedicatedService {
     @Override
     public DedicatePodResponse createDedicatePodResponse(DedicatedResources resource) {
         DedicatePodResponse dedicatePodResponse = new DedicatePodResponse();
+        HostPodVO pod = _podDao.findById(resource.getPodId());
+        DomainVO domain = _domainDao.findById(resource.getDomainId());
+        AccountVO account = _accountDao.findById(resource.getAccountId());
         dedicatePodResponse.setId(resource.getUuid());
-        dedicatePodResponse.setPodId(resource.getPodId());
-        dedicatePodResponse.setDomainId(resource.getDomainId());
-        dedicatePodResponse.setAccountId(resource.getAccountId());
+        dedicatePodResponse.setPodId(pod.getUuid());
+        dedicatePodResponse.setDomainId(domain.getUuid());
+        dedicatePodResponse.setAccountId(account.getUuid());
         dedicatePodResponse.setObjectName("dedicated pod");
         return dedicatePodResponse;
     }
@@ -234,10 +246,13 @@ public class DedicatedResourceManagerImpl implements DedicatedService {
     @Override
     public DedicateClusterResponse createDedicateClusterResponse(DedicatedResources resource) {
         DedicateClusterResponse dedicateClusterResponse = new DedicateClusterResponse();
+        ClusterVO cluster = _clusterDao.findById(resource.getClusterId());
+        DomainVO domain = _domainDao.findById(resource.getDomainId());
+        AccountVO account = _accountDao.findById(resource.getAccountId());
         dedicateClusterResponse.setId(resource.getUuid());
-        dedicateClusterResponse.setClusterId(resource.getClusterId());
-        dedicateClusterResponse.setDomainId(resource.getDomainId());
-        dedicateClusterResponse.setAccountId(resource.getAccountId());
+        dedicateClusterResponse.setClusterId(cluster.getUuid());
+        dedicateClusterResponse.setDomainId(domain.getUuid());
+        dedicateClusterResponse.setAccountId(account.getUuid());
         dedicateClusterResponse.setObjectName("dedicated cluster");
         return dedicateClusterResponse;
     }
@@ -245,10 +260,13 @@ public class DedicatedResourceManagerImpl implements DedicatedService {
     @Override
     public DedicateHostResponse createDedicateHostResponse(DedicatedResources resource) {
         DedicateHostResponse dedicateHostResponse = new DedicateHostResponse();
+        HostVO host = _hostDao.findById(resource.getHostId());
+        DomainVO domain = _domainDao.findById(resource.getDomainId());
+        AccountVO account = _accountDao.findById(resource.getAccountId());
         dedicateHostResponse.setId(resource.getUuid());
-        dedicateHostResponse.setHostId(resource.getHostId());
-        dedicateHostResponse.setDomainId(resource.getDomainId());
-        dedicateHostResponse.setAccountId(resource.getAccountId());
+        dedicateHostResponse.setHostId(host.getUuid());
+        dedicateHostResponse.setDomainId(domain.getUuid());
+        dedicateHostResponse.setAccountId(account.getUuid());
         dedicateHostResponse.setObjectName("dedicated host");
         return dedicateHostResponse;
     }
@@ -415,6 +433,7 @@ public class DedicatedResourceManagerImpl implements DedicatedService {
 
     @Override
     @DB
+    @ActionEvent(eventType = EventTypes.EVENT_DEDICATE_RESOURCE_RELEASE, eventDescription = "deleting dedicated resource")
     public boolean releaseDedicatedResource(Long zoneId, Long podId, Long clusterId, Long hostId) {
         DedicatedResourceVO resource = new DedicatedResourceVO();
         Long resourceId = null;

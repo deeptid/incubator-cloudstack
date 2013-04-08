@@ -385,6 +385,11 @@ public class EventTypes {
     public static final String EVENT_AFFINITY_GROUP_REMOVE = "AG.REMOVE";
     public static final String EVENT_VM_AFFINITY_GROUP_UPDATE = "VM.AG.UPDATE";
 
+    //Dedicated Resources
+    public static final String EVENT_DEDICATE_RESOURCE = "DEDICATE.RESOURCE";
+    public static final String EVENT_DEDICATE_RESOURCE_RELEASE = "DEDICATE.RELEASE.RELEASE";
+
+
     static {
 
         // TODO: need a way to force author adding event types to declare the entity details as well, with out braking

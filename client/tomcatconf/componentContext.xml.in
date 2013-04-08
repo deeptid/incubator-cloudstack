@@ -47,6 +47,34 @@
   
   <bean id="GlobalLoadBalancingRulesServiceImpl" class ="org.apache.cloudstack.region.gslb.GlobalLoadBalancingRulesServiceImpl" />
 
+<<<<<<< HEAD
+=======
+=======
+  <bean id="managementServerImpl" class ="com.cloud.server.ManagementServerImpl" />
+  <bean id="configurationServerImpl" class="com.cloud.server.ConfigurationServerImpl" />
+   
+  <bean id="clusterManagerImpl" class="com.cloud.cluster.ClusterManagerImpl" />
+  <bean id="clusteredAgentManagerImpl" class="com.cloud.agent.manager.ClusteredAgentManagerImpl" />
+  <bean id="clusteredVirtualMachineManagerImpl" class="com.cloud.vm.ClusteredVirtualMachineManagerImpl" />
+  <bean id="highAvailabilityManagerExtImpl" class="com.cloud.ha.HighAvailabilityManagerExtImpl" />
+  <bean id="userVmManagerImpl" class="com.cloud.vm.UserVmManagerImpl" />
+  <bean id="consoleProxyManagerImpl" class="com.cloud.consoleproxy.ConsoleProxyManagerImpl" />
+  <bean id="securityGroupManagerImpl2" class="com.cloud.network.security.SecurityGroupManagerImpl2" />
+  <bean id="premiumSecondaryStorageManagerImpl" class="com.cloud.secstorage.PremiumSecondaryStorageManagerImpl" />
+  <bean id="randomlyIncreasingVMInstanceDaoImpl" class="com.cloud.vm.dao.RandomlyIncreasingVMInstanceDaoImpl" />
+  <bean id="ipv6AddressManagerImpl" class="com.cloud.network.Ipv6AddressManagerImpl" />
+
+  <bean id="apiRateLimitServiceImpl" class="org.apache.cloudstack.ratelimit.ApiRateLimitServiceImpl"/>
+  <bean id="BaremetalManager" class="com.cloud.baremetal.manager.BaremetalManagerImpl"/>
+  <bean id="BaremetalDhcpManager" class="com.cloud.baremetal.networkservice.BaremetalDhcpManagerImpl"/>
+  <bean id="BaremetalKickStartPxeService" class="com.cloud.baremetal.networkservice.BaremetalKickStartServiceImpl"/>
+  <bean id="BaremetalPingPxeService" class="com.cloud.baremetal.networkservice.BareMetalPingServiceImpl" />
+  <bean id="BaremetalPxeManager" class="com.cloud.baremetal.networkservice.BaremetalPxeManagerImpl" />
+  <bean id="affinityGroupServiceImpl" class="org.apache.cloudstack.affinity.AffinityGroupServiceImpl"/>
+  <!--bean id="DeploymentPlanningManager" class="com.cloud.deploy.DeploymentPlanningManagerImpl" /-->
+   
+>>>>>>> More API changes
+>>>>>>> ad7208b... migration for Dedicated resources
   <!--
     Nicira support components
   -->
@@ -310,4 +338,26 @@
     	<property name="name" value="HostAntiAffinityProcessor"/>
     	<property name="type" value="host anti-affinity"/>
  	</bean>
+<<<<<<< HEAD
+=======
+=======
+
+  <bean id="BaremetalGuru" class="com.cloud.baremetal.manager.BareMetalGuru">
+    <property name="name" value="BaremetalGuru"/>
+  </bean>
+  
+  
+     
+  <!--
+    Network Gurus
+  -->
+    <bean id="HostAntiAffinityProcessor" class="org.apache.cloudstack.affinity.HostAntiAffinityProcessor">
+    	<property name="name" value="HostAntiAffinityProcessor"/>
+ 	</bean>
+    <bean id="ExplicitDedicationProcessor" class="org.apache.cloudstack.affinity.ExplicitDedicationProcessor">
+    <property name="name" value="ExplicitDedicationProcessor"/>
+  </bean>
+  
+>>>>>>> API to list planners and set the planner in Service offering
+>>>>>>> ad7208b... migration for Dedicated resources
 </beans>

@@ -26,13 +26,13 @@ public class DedicateClusterResponse extends BaseResponse {
     private String id;
 
     @SerializedName("clusterid") @Param(description="the ID of the Pod")
-    private Long clusterId;
+    private String clusterId;
     
     @SerializedName("domainid") @Param(description="the domain ID of the Pod")
-    private Long domainId;
+    private String domainId;
     
     @SerializedName("accountid") @Param(description="the Account ID of the Pod")
-    private Long accountId;
+    private String accountId;
 
     @SerializedName("implicitDedication") @Param(description="the Account ID of the Pod")
     private Boolean implicitDedication;
@@ -45,27 +45,27 @@ public class DedicateClusterResponse extends BaseResponse {
         this.id = id;
     }
 
-    public Long getClusterId() {
+    public String getClusterId() {
         return clusterId;
     }
 
-    public void setClusterId(Long clusterId) {
+    public void setClusterId(String clusterId) {
         this.clusterId = clusterId;
     }
     
-    public Long getDomainId() {
+    public String getDomainId() {
     	return domainId;
     }
     
-    public void setDomainId(Long domainId) {
+    public void setDomainId(String domainId) {
         this.domainId = domainId;
     }
     
-    public Long getAccountId() {
+    public String getAccountId() {
     	return accountId;
     }
     
-    public void setAccountId(Long accountId) {
+    public void setAccountId(String accountId) {
         this.accountId = accountId;
     }
 

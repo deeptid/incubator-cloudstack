@@ -65,7 +65,7 @@ public class ExplicitDedicationProcessor extends AdapterBase implements Affinity
     protected HostPodDao _podDao;
     @Inject 
     protected ClusterDao _clusterDao;
-    @Inject 
+    @Inject
     protected HostDao _hostDao;
 
     @Override
@@ -108,7 +108,7 @@ public class ExplicitDedicationProcessor extends AdapterBase implements Affinity
             List<DedicatedResourceVO> dedicatedPodsByAccount = _dedicatedDao.findPodsByAccountId(accountId);
             List<DedicatedResourceVO> dedicatedPodsByDomain = _dedicatedDao.findPodsByDomainId(domainId);
             dedicatedPodsByAccount.addAll(dedicatedPodsByDomain);
-            if (dedicatedPodsByAccount.size() != 0 || dedicatedPodsByAccount != null){
+            if (dedicatedPodsByAccount != null && !dedicatedPodsByAccount.isEmpty()){
                 for (DedicatedResourceVO dedicatedPod : dedicatedPodsByAccount){
                     //remove dedicated pod from the Avoid list
                     avoid.removePod(dedicatedPod.getPodId());
@@ -127,7 +127,7 @@ public class ExplicitDedicationProcessor extends AdapterBase implements Affinity
             List<DedicatedResourceVO> dedicatedClustersByAccount = _dedicatedDao.findClustersByAccountId(accountId);
             List<DedicatedResourceVO> dedicatedClustersByDomain = _dedicatedDao.findClustersByDomainId(domainId);
             dedicatedClustersByAccount.addAll(dedicatedClustersByDomain);
-            if (dedicatedClustersByAccount.size() != 0 || dedicatedClustersByAccount != null){
+            if (dedicatedClustersByAccount != null && dedicatedClustersByAccount.size() != 0){
                 for (DedicatedResourceVO dedicatedCluster : dedicatedClustersByAccount){
                     //remove dedicated cluster from the Avoid list
                     avoid.removeCluster(dedicatedCluster.getClusterId());
@@ -136,20 +136,72 @@ public class ExplicitDedicationProcessor extends AdapterBase implements Affinity
                     for (HostVO host: hostsInCluster){
                         avoid.removeHost(host.getId());
                     }
+                    //remove resources above this cluster from the Avoid List
+                    ClusterVO cluster = _clusterDao.findById(dedicatedCluster.getClusterId());
+                    HostPodVO pod = _podDao.findById(cluster.getPodId());
+                    avoid.removePod(pod.getId());
                 }
             }
 
             List<DedicatedResourceVO> dedicatedHostsByAccount = _dedicatedDao.findHostsByAccountId(accountId);
             List<DedicatedResourceVO> dedicatedHostsByDomain = _dedicatedDao.findHostsByDomainId(domainId);
             dedicatedHostsByAccount.addAll(dedicatedHostsByDomain);
-            if (dedicatedHostsByAccount.size() != 0 || dedicatedHostsByAccount != null){
+            if ( dedicatedHostsByAccount != null && dedicatedHostsByAccount.size() != 0){
                 for (DedicatedResourceVO dedicatedHost : dedicatedHostsByAccount){
                     //remove all dedicated host from the AvoidList
                     avoid.removeHost(dedicatedHost.getHostId());
+                    //remove resources above this host from the AvoidList
+                    HostVO host = _hostDao.findById(dedicatedHost.getHostId());
+                    avoid.removeCluster(host.getClusterId());
+                    avoid.removePod(host.getPodId());
                 }
             }
 
+            //Using ExcludeList to store the scopeList
+            //ExcludeList scopeList = null;
+            //setScope(dc.getId(), dedicatedPodsByAccount, dedicatedClustersByAccount, dedicatedHostsByAccount, scopeList);
         }
+    }
+
+    private void setScope(long dcId, List<DedicatedResourceVO> dedicatedPodsByAccount,
+            List<DedicatedResourceVO> dedicatedClustersByAccount,
+            List<DedicatedResourceVO> dedicatedHostsByAccount, ExcludeList scopeList) {
+        if (dedicatedPodsByAccount != null && dedicatedPodsByAccount.size() != 0) {
+            if (dedicatedPodsByAccount.size() == 1){
+                DedicatedResourceVO dedicatedPod = dedicatedPodsByAccount.get(0);
+                scopeList.addPod(dedicatedPod.getPodId());
+            } else {
+                scopeList.addDataCenter(dcId);
+            }
+        }
+        if (dedicatedClustersByAccount != null && dedicatedClustersByAccount.size() != 0) {
+            if (dedicatedClustersByAccount.size() == 1) {
+                DedicatedResourceVO dedicatedCluster = dedicatedClustersByAccount.get(0);
+                scopeList.addCluster(dedicatedCluster.getClusterId());
+            } else {
+                for (DedicatedResourceVO dedicatedCluster : dedicatedClustersByAccount) {
+                    Long clusterId = dedicatedCluster.getClusterId();
+                    ClusterVO cluster = _clusterDao.findById(clusterId);
+                    if (! scopeList.getPodsToAvoid().contains(cluster.getPodId())) {
+                        scopeList.addPod(cluster.getPodId());
+                    }
+                }
+            }
+        }
+        if (dedicatedHostsByAccount != null && dedicatedHostsByAccount.size() != 0) {
+            if (dedicatedHostsByAccount.size() == 1) {
+                DedicatedResourceVO dedicatedHost = dedicatedHostsByAccount.get(0);
+                scopeList.addHost(dedicatedHost.getHostId());
+            } else {
+                for (DedicatedResourceVO dedicateHost : dedicatedHostsByAccount) {
+                    HostVO host = _hostDao.findById(dedicateHost.getHostId());
+                    if (scopeList.getClustersToAvoid().contains(host.getClusterId())) {
+                        scopeList.addCluster(host.getClusterId());
+                    }
+                }
+            }
+        }
+
     }
 
     @Override

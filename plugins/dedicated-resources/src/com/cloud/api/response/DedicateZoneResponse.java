@@ -29,13 +29,13 @@ public class DedicateZoneResponse extends BaseResponse {
     private String id;
 
     @SerializedName("zoneid") @Param(description="the ID of the Zone")
-    private Long zoneId;
+    private String zoneId;
 
     @SerializedName("domainid") @Param(description="the domain ID to which the Pod is dedicated")
-    private Long domainId;
+    private String domainId;
 
     @SerializedName("accountid") @Param(description="the Account Id to which the Pod is dedicated")
-    private Long accountId;
+    private String accountId;
 
     @SerializedName("implicitDedication") @Param(description="the Account ID of the Pod")
     private Boolean implicitDedication;
@@ -48,27 +48,27 @@ public class DedicateZoneResponse extends BaseResponse {
         this.id = id;
     }
 
-    public Long getZoneId() {
+    public String getZoneId() {
         return zoneId;
     }
 
-    public void setZoneId(Long zoneId) {
+    public void setZoneId(String zoneId) {
         this.zoneId = zoneId;
     }
 
-    public Long getDomainId() {
+    public String getDomainId() {
         return domainId;
     }
 
-    public void setDomainId(Long domainId) {
+    public void setDomainId(String domainId) {
         this.domainId = domainId;
     }
 
-    public Long getAccountId() {
+    public String getAccountId() {
         return accountId;
     }
 
-    public void setAccountId(Long accountId) {
+    public void setAccountId(String accountId) {
         this.accountId = accountId;
     }
 

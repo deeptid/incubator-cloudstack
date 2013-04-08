@@ -77,9 +77,11 @@ import com.cloud.configuration.dao.ConfigurationDao;
 import com.cloud.dc.DataCenter;
 import com.cloud.dc.DataCenter.NetworkType;
 import com.cloud.dc.DataCenterVO;
+import com.cloud.dc.DedicatedResourceVO;
 import com.cloud.dc.HostPodVO;
 import com.cloud.dc.dao.ClusterDao;
 import com.cloud.dc.dao.DataCenterDao;
+import com.cloud.dc.dao.DedicatedResourceDao;
 import com.cloud.dc.dao.HostPodDao;
 import com.cloud.deploy.DataCenterDeployment;
 import com.cloud.deploy.DeployDestination;
@@ -383,6 +385,9 @@ public class UserVmManagerImpl extends ManagerBase implements UserVmManager, Use
     AffinityGroupVMMapDao _affinityGroupVMMapDao;
     @Inject
     AffinityGroupDao _affinityGroupDao;
+
+    @Inject
+    DedicatedResourceDao _dedicatedDao; 
 
     @Inject
     List<DeployPlannerSelector> plannerSelectors;
@@ -3471,6 +3476,22 @@ public class UserVmManagerImpl extends ManagerBase implements UserVmManager, Use
                             + destinationHost.getResourceState());
         }
 
+        HostVO srcHost = _hostDao.findById(srcHostId);
+        HostVO destHost = _hostDao.findById(destinationHost.getId());
+        checkIfHostIsDedicated(srcHost);
+        //if srcHost is dedicated and destination Host is not
+        if (checkIfHostIsDedicated(srcHost) && !checkIfHostIsDedicated(destHost)) {
+            //raise an alert
+            String msg = "Vm with Id: " + vmId + ", is migrated on a non-dedicated host with Id:" + destinationHost.getId();
+            _alertMgr.sendAlert(AlertManager.ALERT_TYPE_USERVM, vm.getDataCenterId(), vm.getPodIdToDeployIn(), msg, msg);
+        }
+      //if srcHost is non dedicated but destination Host is.
+        if (!checkIfHostIsDedicated(srcHost) && checkIfHostIsDedicated(destHost)) {
+            //raise an alert
+            String msg = "Vm with Id: " + vmId + ", is migrated on a dedicated host with Id:" + destinationHost.getId();
+            _alertMgr.sendAlert(AlertManager.ALERT_TYPE_USERVM, vm.getDataCenterId(), vm.getPodIdToDeployIn(), msg, msg);
+        }
+
         // call to core process
         DataCenterVO dcVO = _dcDao.findById(destinationHost.getDataCenterId());
         HostPodVO pod = _podDao.findById(destinationHost.getPodId());
@@ -3496,6 +3517,20 @@ public class UserVmManagerImpl extends ManagerBase implements UserVmManager, Use
 
         VMInstanceVO migratedVm = _itMgr.migrate(vm, srcHostId, dest);
         return migratedVm;
+    }
+
+    private boolean checkIfHostIsDedicated(HostVO host) {
+        // TODO Auto-generated method stub
+        long hostId = host.getId();
+        DedicatedResourceVO dedicatedHost = _dedicatedDao.findByHostId(hostId);
+        DedicatedResourceVO dedicatedClusterOfHost = _dedicatedDao.findByClusterId(host.getClusterId());
+        DedicatedResourceVO dedicatedPodOfHost = _dedicatedDao.findByPodId(host.getPodId());
+        if(dedicatedHost != null && dedicatedClusterOfHost != null && dedicatedPodOfHost != null) {
+            return true;
+        } else {
+            return false;
+        }
+
     }
 
     @DB
