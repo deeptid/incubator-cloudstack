@@ -190,9 +190,10 @@ public class DedicatedResourceManagerImpl implements DedicatedService {
                 }
             }
         }
-        DedicatedResourceVO dedicatedResource = new DedicatedResourceVO(null, podId, clusterId, hostId, null, null, false);
+
         Transaction txn = Transaction.currentTxn();
         txn.start();
+        DedicatedResourceVO dedicatedResource = new DedicatedResourceVO(zoneId, podId, clusterId, hostId, null, null, false);
         try {
             if (domainId != null) {
                 dedicatedResource.setDomainId(domainId);

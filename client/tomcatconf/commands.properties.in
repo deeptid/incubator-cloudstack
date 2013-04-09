@@ -575,3 +575,17 @@ deleteAffinityGroup=15
 listAffinityGroups=15
 updateVMAffinityGroup=15
 listAffinityGroupTypes=15
+
+#### Dedicated Resources
+dedicateZone=1
+dedicatedPod=1
+dedicateCluster=1
+dedicateHost=1
+releaseDedicatedZone=1
+releaseDedicatedPod=1
+releaseDedicatedCluster=1
+releaseDedicatedHost=1
+listDedicatedZones=1
+listDedicatedPods=1
+listDedicatedCluster=1
+listDedicatedHost=1

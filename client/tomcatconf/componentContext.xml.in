@@ -47,34 +47,6 @@
   
   <bean id="GlobalLoadBalancingRulesServiceImpl" class ="org.apache.cloudstack.region.gslb.GlobalLoadBalancingRulesServiceImpl" />
 
-<<<<<<< HEAD
-=======
-=======
-  <bean id="managementServerImpl" class ="com.cloud.server.ManagementServerImpl" />
-  <bean id="configurationServerImpl" class="com.cloud.server.ConfigurationServerImpl" />
-   
-  <bean id="clusterManagerImpl" class="com.cloud.cluster.ClusterManagerImpl" />
-  <bean id="clusteredAgentManagerImpl" class="com.cloud.agent.manager.ClusteredAgentManagerImpl" />
-  <bean id="clusteredVirtualMachineManagerImpl" class="com.cloud.vm.ClusteredVirtualMachineManagerImpl" />
-  <bean id="highAvailabilityManagerExtImpl" class="com.cloud.ha.HighAvailabilityManagerExtImpl" />
-  <bean id="userVmManagerImpl" class="com.cloud.vm.UserVmManagerImpl" />
-  <bean id="consoleProxyManagerImpl" class="com.cloud.consoleproxy.ConsoleProxyManagerImpl" />
-  <bean id="securityGroupManagerImpl2" class="com.cloud.network.security.SecurityGroupManagerImpl2" />
-  <bean id="premiumSecondaryStorageManagerImpl" class="com.cloud.secstorage.PremiumSecondaryStorageManagerImpl" />
-  <bean id="randomlyIncreasingVMInstanceDaoImpl" class="com.cloud.vm.dao.RandomlyIncreasingVMInstanceDaoImpl" />
-  <bean id="ipv6AddressManagerImpl" class="com.cloud.network.Ipv6AddressManagerImpl" />
-
-  <bean id="apiRateLimitServiceImpl" class="org.apache.cloudstack.ratelimit.ApiRateLimitServiceImpl"/>
-  <bean id="BaremetalManager" class="com.cloud.baremetal.manager.BaremetalManagerImpl"/>
-  <bean id="BaremetalDhcpManager" class="com.cloud.baremetal.networkservice.BaremetalDhcpManagerImpl"/>
-  <bean id="BaremetalKickStartPxeService" class="com.cloud.baremetal.networkservice.BaremetalKickStartServiceImpl"/>
-  <bean id="BaremetalPingPxeService" class="com.cloud.baremetal.networkservice.BareMetalPingServiceImpl" />
-  <bean id="BaremetalPxeManager" class="com.cloud.baremetal.networkservice.BaremetalPxeManagerImpl" />
-  <bean id="affinityGroupServiceImpl" class="org.apache.cloudstack.affinity.AffinityGroupServiceImpl"/>
-  <!--bean id="DeploymentPlanningManager" class="com.cloud.deploy.DeploymentPlanningManagerImpl" /-->
-   
->>>>>>> More API changes
->>>>>>> ad7208b... migration for Dedicated resources
   <!--
     Nicira support components
   -->
@@ -87,59 +59,6 @@
   <bean id="NiciraNvp" class="com.cloud.network.element.NiciraNvpElement">
     <property name="name" value="NiciraNvp"/>
   </bean>
-<<<<<<< HEAD
-=======
-  -->
-
-<!--
-  <bean id="BigSwitchVnsElementService" class="com.cloud.network.element.BigSwitchVnsElement">
-    <property name="name" value="BigSwitchVnsElementService"/>
-  </bean>
--->
-<!--
-  <bean id="DedicatedResourceManager" class="com.cloud.dedicated.manager.DedicatedResourceManagerImpl">
-    <property name="name" value="DedicatedResourceManager"/>
-  </bean>
-  -->
-  <!--
-     Adapters
-  -->
-  <bean id="FirstFitRouting" class="com.cloud.agent.manager.allocator.impl.FirstFitRoutingAllocator">
-    <property name="name" value="FirstFitRouting"/>
-  </bean>
-
-  
-  <!--
-    Storage pool allocators
-  -->
-
-  <bean id="LocalStoragePoolAllocator" class="org.apache.cloudstack.storage.allocator.LocalStoragePoolAllocator">
-    <property name="name" value="LocalStorage"/>
-  </bean>
-  <!--
-  <bean id="FirstFitStoragePoolAllocator" class="org.apache.cloudstack.storage.allocator.FirstFitStoragePoolAllocator">
-    <property name="name" value="Storage"/>
-  </bean>
-  -->
-
-  <bean id="UserConcentratedAllocator" class="com.cloud.agent.manager.allocator.impl.UserConcentratedAllocator">
-    <property name="name" value="User First"/>
-  </bean>
-
-  <bean id="ConsoleProxyAllocator" class="com.cloud.consoleproxy.ConsoleProxyBalanceAllocator">
-    <property name="name" value="Balance"/>
-  </bean>
-
-  <bean id="StaticRoleBasedAPIAccessChecker" class="org.apache.cloudstack.acl.StaticRoleBasedAPIAccessChecker"/>
-
-  <bean id="ExteralIpAddressAllocator" class="com.cloud.network.ExteralIpAddressAllocator">
-    <property name="name" value="Basic"/>
-  </bean>
-
-  <bean id="hyervisorTemplateAdapter" class="com.cloud.template.HyervisorTemplateAdapter">
-    <property name="name" value="HypervisorAdapter"/>
-  </bean>
->>>>>>> Adding dedicated APIs  plugin
 
   <!-- 
     Midonet support components
@@ -338,26 +257,13 @@
     	<property name="name" value="HostAntiAffinityProcessor"/>
     	<property name="type" value="host anti-affinity"/>
  	</bean>
-<<<<<<< HEAD
-=======
-=======
 
-  <bean id="BaremetalGuru" class="com.cloud.baremetal.manager.BareMetalGuru">
-    <property name="name" value="BaremetalGuru"/>
-  </bean>
-  
-  
-     
   <!--
-    Network Gurus
+    Dedicated Resources components
   -->
-    <bean id="HostAntiAffinityProcessor" class="org.apache.cloudstack.affinity.HostAntiAffinityProcessor">
-    	<property name="name" value="HostAntiAffinityProcessor"/>
- 	</bean>
-    <bean id="ExplicitDedicationProcessor" class="org.apache.cloudstack.affinity.ExplicitDedicationProcessor">
-    <property name="name" value="ExplicitDedicationProcessor"/>
+  <bean id="dedicatedResourceDaoImpl" class="com.cloud.dc.dao.DedicatedResourceDaoImpl" />
   </bean>
-  
->>>>>>> API to list planners and set the planner in Service offering
->>>>>>> ad7208b... migration for Dedicated resources
+  <bean id="ExplicitDedicationProcessor" class="org.apache.cloudstack.affinity.ExplicitDedicationProcessor">
+  <property name="name" value="ExplicitDedicationProcessor"/>
+  </bean>
 </beans>

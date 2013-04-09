@@ -23,13 +23,14 @@ import javax.ejb.Local;
 import org.springframework.stereotype.Component;
 
 import com.cloud.dc.DedicatedResourceVO;
+import com.cloud.utils.db.DB;
 import com.cloud.utils.db.GenericDaoBase;
 import com.cloud.utils.db.SearchBuilder;
 import com.cloud.utils.db.SearchCriteria;
 import com.cloud.utils.db.Transaction;
 
 @Component
-@Local(value={DedicatedResourceDao.class})
+@Local(value={DedicatedResourceDao.class}) @DB(txn = false)
 public class DedicatedResourceDaoImpl extends GenericDaoBase<DedicatedResourceVO, Long> implements DedicatedResourceDao {
     protected final SearchBuilder<DedicatedResourceVO> ZoneSearch;
     protected final SearchBuilder<DedicatedResourceVO> PodSearch;

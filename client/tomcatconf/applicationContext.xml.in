@@ -158,7 +158,15 @@
       </map>
     </property>  
   </bean>
-  
+  <bean id="dedicatedResourceDaoImpl" class="com.cloud.dc.dao.DedicatedResourceDaoImpl">
+    <property name="configParams">
+      <map>
+        <entry key="cache.size" value="30" />
+        <entry key="cache.time.to.live" value="3600" />
+      </map>
+    </property>  
+  </bean>  
+
   <!--
     DAOs with default configuration
   -->
@@ -192,6 +200,7 @@
   <bean id="dataCenterVnetDaoImpl" class="com.cloud.dc.dao.DataCenterVnetDaoImpl" />
   <bean id="dataStoreProviderDaoImpl" class="org.apache.cloudstack.storage.datastore.db.DataStoreProviderDaoImpl" />
   <bean id="dcDetailsDaoImpl" class="com.cloud.dc.dao.DcDetailsDaoImpl" />
+  <bean id="dedicatedResourceDaoImpl" class="com.cloud.dc.dao.DedicatedResourceDaoImpl" />
   <bean id="engineDcDetailsDaoImpl" class="org.apache.cloudstack.engine.datacenter.entity.api.db.dao.DcDetailsDaoImpl" />
   <bean id="diskOfferingJoinDaoImpl" class="com.cloud.api.query.dao.DiskOfferingJoinDaoImpl" />
   <bean id="domainDaoImpl" class="com.cloud.domain.dao.DomainDaoImpl" />
