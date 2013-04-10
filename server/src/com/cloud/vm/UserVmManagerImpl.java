@@ -2267,8 +2267,21 @@ public class UserVmManagerImpl extends ManagerBase implements UserVmManager, Use
                             + zone.getId());
         }
 
-        if (zone.getDomainId() != null) {
-            DomainVO domain = _domainDao.findById(zone.getDomainId());
+        boolean isExplicit = false;
+        // check affinity group type Explicit dedication
+        if (affinityGroupIdList != null) {
+            for (Long affinityGroupId : affinityGroupIdList) {
+                AffinityGroupVO ag = _affinityGroupDao.findById(affinityGroupId);
+                String agType = ag.getType(); 
+                if (agType.equals("ExplicitDedication")) {
+                    isExplicit = true;
+                }
+            }
+        }
+        // check if zone is dedicated
+        DedicatedResourceVO dedicatedZone = _dedicatedDao.findByZoneId(zone.getId());
+        if (isExplicit && dedicatedZone != null) {
+            DomainVO domain = _domainDao.findById(dedicatedZone.getDomainId());
             if (domain == null) {
                 throw new CloudRuntimeException("Unable to find the domain "
                         + zone.getDomainId() + " for the zone: " + zone);

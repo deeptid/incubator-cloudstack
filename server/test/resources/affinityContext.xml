@@ -23,7 +23,7 @@
      <context:annotation-config />
 
   <bean id="componentContext" class="com.cloud.utils.component.ComponentContext" />
-
+  <bean id="dedicatedResourceDaoImpl" class="com.cloud.dc.dao.DedicatedResourceDaoImpl" />
   <bean id="transactionContextBuilder" class="com.cloud.utils.db.TransactionContextBuilder" />
   <bean id="actionEventInterceptor" class="com.cloud.event.ActionEventInterceptor" />
   <bean id="instantiatePostProcessor" class="com.cloud.utils.component.ComponentInstantiationPostProcessor">
@@ -40,5 +40,6 @@
     </bean>
   
     <bean class="org.apache.cloudstack.affinity.AffinityApiTestConfiguration" />
+    
 
 </beans>
