@@ -112,7 +112,7 @@ public class DeploymentPlanningManagerImpl extends ManagerBase implements Deploy
             //add explicitly dedicated resources in avoidList
             DedicatedResourceVO dedicatedZone = _dedicatedDao.findByZoneId(dc.getId());
             if (dedicatedZone != null) {
-                throw new CloudRuntimeException("Zone " + dc.getName() + " is dedicated and cannot be used for VM deployment which does not require dedication.");
+                throw new CloudRuntimeException("Failed to deploy VM. Zone " + dc.getName() + " is dedicated.");
             }
             List<HostPodVO> podsInDc = _podDao.listByDataCenterId(dc.getId());
             for (HostPodVO pod : podsInDc) {

@@ -91,27 +91,18 @@ public class DedicatedResourceManagerImpl implements DedicatedService {
     @Override
     @DB
     @ActionEvent(eventType = EventTypes.EVENT_DEDICATE_RESOURCE, eventDescription = "dedicating resource")
-    public List<DedicatedResourceVO> dedicateResource(Long zoneId, Long podId, Long clusterId, Long hostId, Long domainId, Long accountId, Boolean implicit) {
+    public List<DedicatedResourceVO> dedicateResource(Long zoneId, Long podId, Long clusterId, Long hostId, Long domainId, Long accountId) {
         // verify parameters
         Long userId = UserContext.current().getCallerUserId();
         
         DomainVO domain = _domainDao.findById(domainId);
         AccountVO account = _accountDao.findById(accountId);
-        if (implicit == null) {
-            implicit = false;
-        }
-        if (implicit && domainId !=null && accountId != null) {
-            throw new InvalidParameterValueException("Please specify 'domain id or account id' OR 'implicit dedication flag' but not both");
-        }
-        if (!implicit) {
-            if (domain == null) {
-                throw new InvalidParameterValueException("Unable to find the domain by id " + domainId + ", please specify valid domainId");
-            } else {
-                if (accountId != null  && account == null) {
-                    throw new InvalidParameterValueException("Unable to find the account by id " + accountId);
-                }
+        if (domain == null) {
+            throw new InvalidParameterValueException("Unable to find the domain by id " + domainId + ", please specify valid domainId");
+        } else {
+            if (accountId != null  && account == null) {
+                throw new InvalidParameterValueException("Unable to find the account by id " + accountId);
             }
-
         }
         //check if account belongs to the domain id
         if (accountId != null) {
@@ -201,8 +192,6 @@ public class DedicatedResourceManagerImpl implements DedicatedService {
                 if (accountId != null) {
                     dedicatedResource.setAccountId(accountId);
                 }
-            } else {
-                dedicatedResource.setImplicitDedication(implicit);
             }
             dedicatedResource = _dedicatedDao.persist(dedicatedResource);
         } catch (Exception e) {
@@ -293,12 +282,8 @@ public class DedicatedResourceManagerImpl implements DedicatedService {
         Long zoneId = cmd.getZoneId();
         Long domainId = cmd.getDomainId();
         Long accountId = cmd.getAccountId();
-        Boolean implicit = cmd.getImplicitDedication();
         DomainVO domain = _domainDao.findById(domainId);
         AccountVO account = _accountDao.findById(accountId);
-        if (implicit == null) {
-            implicit = false;
-        }
         if (zoneId != null) {
             DedicatedResourceVO zone = _dedicatedDao.findByZoneId(zoneId);
             if (zone != null){
@@ -328,12 +313,8 @@ public class DedicatedResourceManagerImpl implements DedicatedService {
         Long podId = cmd.getPodId();
         Long domainId = cmd.getDomainId();
         Long accountId = cmd.getAccountId();
-        Boolean implicit = cmd.getImplicitDedication();
         DomainVO domain = _domainDao.findById(domainId);
         AccountVO account = _accountDao.findById(accountId);
-        if (implicit == null) {
-            implicit = false;
-        }
         if (podId != null) {
             DedicatedResourceVO pod = _dedicatedDao.findByPodId(podId);
             if (pod != null){
@@ -344,7 +325,7 @@ public class DedicatedResourceManagerImpl implements DedicatedService {
         }
         if (accountId != null) {
             // for domainId != null
-            // right now, we made the decision to only list pods associated
+            // we made the decision to only list pods associated
             // with this domain/account
             if (domain != null && domainId == account.getDomainId()) {
                 pods = _dedicatedDao.findPodsByAccountId(accountId);
@@ -353,9 +334,6 @@ public class DedicatedResourceManagerImpl implements DedicatedService {
             }
         } else if (domainId != null) {
             pods = _dedicatedDao.findPodsByDomainId(domainId);
-        }
-        if (implicit) {
-            pods = _dedicatedDao.findPodsByImplicitDedication(implicit);
         }
         return pods;
     }
@@ -366,12 +344,8 @@ public class DedicatedResourceManagerImpl implements DedicatedService {
         Long clusterId = cmd.getClusterId();
         Long domainId = cmd.getDomainId();
         Long accountId = cmd.getAccountId();
-        Boolean implicit = cmd.getImplicitDedication();
         DomainVO domain = _domainDao.findById(domainId);
         AccountVO account = _accountDao.findById(accountId);
-        if (implicit == null) {
-            implicit = false;
-        }
         if (clusterId != null) {
             DedicatedResourceVO cluster = _dedicatedDao.findByClusterId(clusterId);
             if (cluster != null){
@@ -390,9 +364,6 @@ public class DedicatedResourceManagerImpl implements DedicatedService {
         } else if (domainId != null) {
             clusters = _dedicatedDao.findClustersByDomainId(domainId);
         }
-        if (implicit) {
-            clusters = _dedicatedDao.findClustersByImplicitDedication(implicit);
-        }
         return clusters;
     }
 
@@ -402,12 +373,8 @@ public class DedicatedResourceManagerImpl implements DedicatedService {
         Long hostId = cmd.getHostId();
         Long domainId = cmd.getDomainId();
         Long accountId = cmd.getAccountId();
-        Boolean implicit = cmd.getImplicitDedication();
         DomainVO domain = _domainDao.findById(domainId);
         AccountVO account = _accountDao.findById(accountId);
-        if (implicit == null) {
-            implicit = false;
-        }
         if (hostId != null) {
             DedicatedResourceVO host = _dedicatedDao.findByHostId(hostId);
             if (host != null){
@@ -425,9 +392,6 @@ public class DedicatedResourceManagerImpl implements DedicatedService {
             }
         } else if (domainId != null) {
             hosts = _dedicatedDao.findHostsByDomainId(domainId);
-        }
-        if (implicit) {
-            hosts = _dedicatedDao.findHostsByImplicitDedication(implicit);
         }
         return hosts;
     }

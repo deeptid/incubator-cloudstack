@@ -91,7 +91,7 @@ public class ExplicitDedicationProcessor extends AdapterBase implements Affinity
 
             DedicatedResourceVO dedicatedZone = _dedicatedDao.findByZoneId(dc.getId());
             if (dedicatedZone != null){
-                //check dedication for account/domain
+                //check dedication for account/domain; all sub-domains can access parent's domain dedicated resources
                 if (dedicatedZone.getDomainId() != null && !(getDomainChildIds(dedicatedZone.getDomainId()).contains(domainId))) {
                     throw new CloudRuntimeException("Zone cannot be used for explicit dedication for this domain " + domainId);
                 } 
@@ -123,7 +123,6 @@ public class ExplicitDedicationProcessor extends AdapterBase implements Affinity
                     if (dPods != null) {
                         dedicatedPodsByDomain.addAll(dPods);
                     }
-
                 }
                 dedicatedPodsByAccount.addAll(dedicatedPodsByDomain);
                 if (dedicatedPodsByAccount != null && !dedicatedPodsByAccount.isEmpty()){
@@ -144,6 +143,13 @@ public class ExplicitDedicationProcessor extends AdapterBase implements Affinity
 
                 List<DedicatedResourceVO> dedicatedClustersByAccount = _dedicatedDao.findClustersByAccountId(accountId);
                 List<DedicatedResourceVO> dedicatedClustersByDomain = _dedicatedDao.findClustersByDomainId(domainId);
+                //Can use dedicated pods of parent domain
+                for (Long id : parentDomainIds) {
+                    List<DedicatedResourceVO> dClusters = _dedicatedDao.findClustersByDomainId(id);
+                    if (dClusters != null) {
+                        dedicatedClustersByDomain.addAll(dClusters);
+                    }
+                }
                 dedicatedClustersByAccount.addAll(dedicatedClustersByDomain);
                 if (dedicatedClustersByAccount != null && dedicatedClustersByAccount.size() != 0){
                     for (DedicatedResourceVO dedicatedCluster : dedicatedClustersByAccount){
@@ -163,6 +169,13 @@ public class ExplicitDedicationProcessor extends AdapterBase implements Affinity
 
                 List<DedicatedResourceVO> dedicatedHostsByAccount = _dedicatedDao.findHostsByAccountId(accountId);
                 List<DedicatedResourceVO> dedicatedHostsByDomain = _dedicatedDao.findHostsByDomainId(domainId);
+                //Can use dedicated pods of parent domain
+                for (Long id : parentDomainIds) {
+                    List<DedicatedResourceVO> dHosts = _dedicatedDao.findHostsByDomainId(id);
+                    if (dHosts != null) {
+                        dedicatedClustersByDomain.addAll(dHosts);
+                    }
+                }
                 dedicatedHostsByAccount.addAll(dedicatedHostsByDomain);
                 if ( dedicatedHostsByAccount != null && dedicatedHostsByAccount.size() != 0){
                     for (DedicatedResourceVO dedicatedHost : dedicatedHostsByAccount){

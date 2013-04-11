@@ -58,8 +58,6 @@ public class ListDedicatedHostsCmd extends BaseListCmd {
             description="the ID of the domain associated with the host")
     private Long accountId;
 
-    @Parameter(name=ApiConstants.IMPLICIT_DEDICATION, type=CommandType.BOOLEAN, description="if true, dedicated resources will be used")
-    private Boolean implicitDedication;
     /////////////////////////////////////////////////////
     /////////////////// Accessors ///////////////////////
     /////////////////////////////////////////////////////
@@ -74,10 +72,6 @@ public class ListDedicatedHostsCmd extends BaseListCmd {
 
     public Long getAccountId(){
         return accountId;
-    }
-
-    public Boolean getImplicitDedication() {
-        return implicitDedication;
     }
 
     /////////////////////////////////////////////////////

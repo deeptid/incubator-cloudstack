@@ -56,9 +56,6 @@ public class DedicatedResourceVO implements DedicatedResources{
     @Column(name = "account_id")
     private Long accountId;
 
-    @Column(name="implicit_dedication")
-    boolean implicitDedication;
-
     public DedicatedResourceVO() {
         this.uuid = UUID.randomUUID().toString();
     }
@@ -71,7 +68,6 @@ public class DedicatedResourceVO implements DedicatedResources{
         this.domainId = domainId;
         this.accountId = accountId;
         this.uuid = UUID.randomUUID().toString();
-        this.implicitDedication = implicitDedication;
     }
 
     public long getId() {
@@ -128,15 +124,6 @@ public class DedicatedResourceVO implements DedicatedResources{
 
     public void setAccountId(Long accountId) {
         this.accountId = accountId;
-    }
-
-    @Override
-    public boolean getImplicitDedication() {
-        return implicitDedication;
-    }
-
-    public void setImplicitDedication(boolean implicitDedication) {
-        this.implicitDedication = implicitDedication;
     }
 
     public String getUuid() {

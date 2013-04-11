@@ -29,6 +29,5 @@ public interface DedicatedResources  extends InfrastructureEntity, InternalIdent
     Long getDomainId();
     Long getAccountId();
     String getUuid();
-    boolean getImplicitDedication();
 
 }

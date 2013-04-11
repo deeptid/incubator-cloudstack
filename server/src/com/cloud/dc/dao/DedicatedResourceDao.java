@@ -48,10 +48,4 @@ public interface DedicatedResourceDao extends GenericDao<DedicatedResourceVO, Lo
 
     List<DedicatedResourceVO> findHostsByDomainId(Long domainId);
 
-    List<DedicatedResourceVO> findPodsByImplicitDedication(Boolean implicit);
-
-    List<DedicatedResourceVO> findClustersByImplicitDedication(Boolean implicit);
-
-    List<DedicatedResourceVO> findHostsByImplicitDedication(Boolean implicit);
-
 }

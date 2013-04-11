@@ -37,9 +37,6 @@ public class DedicatePodResponse extends BaseResponse {
     @SerializedName("accountid") @Param(description="the Account Id to which the Pod is dedicated")
     private String accountId;
 
-    @SerializedName("implicitDedication") @Param(description="the Account ID of the Pod")
-    private Boolean implicitDedication;
-
     public String getId() {
         return id;
     }
@@ -70,13 +67,5 @@ public class DedicatePodResponse extends BaseResponse {
 
     public void setAccountId(String accountId) {
         this.accountId = accountId;
-    }
-
-    public boolean getImplicitDedication() {
-        return implicitDedication;
-    }
-
-    public void setImplicitDedication(boolean implicitDedication) {
-        this.implicitDedication = implicitDedication;
     }
 }

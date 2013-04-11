@@ -51,7 +51,7 @@ public interface DedicatedService extends PluggableService{
      * @param DedicatePodCmd
      */
     List<? extends DedicatedResources> dedicateResource(Long zoneId, Long podId,
-            Long clusterId, Long hostId, Long domainId, Long accountId, Boolean implicit);
+            Long clusterId, Long hostId, Long domainId, Long accountId);
 
     boolean releaseDedicatedResource(Long zoneId, Long podId, Long clusterId, Long hostId);
 

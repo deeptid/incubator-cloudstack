@@ -59,9 +59,6 @@ public class ListDedicatedPodsCmd extends BaseListCmd {
             description="the ID of the account associated with the pod")
     private Long accountId;
 
-    @Parameter(name=ApiConstants.IMPLICIT_DEDICATION, type=CommandType.BOOLEAN, description="if true, dedicated resources will be used")
-    private Boolean implicitDedication;
-
     /////////////////////////////////////////////////////
     /////////////////// Accessors ///////////////////////
     /////////////////////////////////////////////////////
@@ -78,9 +75,6 @@ public class ListDedicatedPodsCmd extends BaseListCmd {
         return accountId;
     }
 
-    public Boolean getImplicitDedication() {
-        return implicitDedication;
-    }
     /////////////////////////////////////////////////////
     /////////////// API Implementation///////////////////
     /////////////////////////////////////////////////////

@@ -58,8 +58,6 @@ public class DedicateHostCmd extends BaseCmd {
     @Parameter(name=ApiConstants.ACCOUNT_ID, type=CommandType.UUID, entityType=AccountResponse.class, description="the ID of the containing account, null for public pods or domain specific pods")
     private Long accountId;
 
-    @Parameter(name=ApiConstants.IMPLICIT_DEDICATION, type=CommandType.BOOLEAN, description="if true, dedicated resources will be used")
-    private Boolean implicitDedication;
     /////////////////////////////////////////////////////
     /////////////////// Accessors ///////////////////////
     /////////////////////////////////////////////////////
@@ -76,9 +74,6 @@ public class DedicateHostCmd extends BaseCmd {
         return accountId;
     }
 
-    public Boolean getImplcitDedication() {
-        return implicitDedication;
-    }
     /////////////////////////////////////////////////////
     /////////////// API Implementation///////////////////
     /////////////////////////////////////////////////////
@@ -95,7 +90,7 @@ public class DedicateHostCmd extends BaseCmd {
 
     @Override
     public void execute(){
-        List<? extends DedicatedResources> result = _dedicatedservice.dedicateResource(null, null, null, getHostId(), getDomainId(), getAccountId(), getImplcitDedication());
+        List<? extends DedicatedResources> result = _dedicatedservice.dedicateResource(null, null, null, getHostId(), getDomainId(), getAccountId());
         ListResponse<DedicateHostResponse> response = new ListResponse<DedicateHostResponse>();
         List<DedicateHostResponse> hostResponseList = new ArrayList<DedicateHostResponse>();
         if (result != null) {

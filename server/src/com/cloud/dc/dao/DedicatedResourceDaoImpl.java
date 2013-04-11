@@ -47,11 +47,6 @@ public class DedicatedResourceDaoImpl extends GenericDaoBase<DedicatedResourceVO
     protected SearchBuilder<DedicatedResourceVO> ListClustersByAccountIdSearch;
     protected SearchBuilder<DedicatedResourceVO> ListHostsByAccountIdSearch;
 
-    protected SearchBuilder<DedicatedResourceVO> ListZonesByImplicitFlagTrue;
-    protected SearchBuilder<DedicatedResourceVO> ListPodsByImplicitFlagTrue;
-    protected SearchBuilder<DedicatedResourceVO> ListClustersByImplicitFlagTrue;
-    protected SearchBuilder<DedicatedResourceVO> ListHostsByImplicitFlagTrue;
-
     protected DedicatedResourceDaoImpl() {
         PodSearch = createSearchBuilder();
         PodSearch.and("podId", PodSearch.entity().getPodId(), SearchCriteria.Op.EQ);
@@ -106,27 +101,6 @@ public class DedicatedResourceDaoImpl extends GenericDaoBase<DedicatedResourceVO
         ListHostsByAccountIdSearch.and("hostId", ListHostsByAccountIdSearch.entity().getHostId(), SearchCriteria.Op.NNULL);
         ListHostsByAccountIdSearch.and("accountId", ListHostsByAccountIdSearch.entity().getAccountId(), SearchCriteria.Op.EQ);
         ListHostsByAccountIdSearch.done();
-
-        ListZonesByImplicitFlagTrue = createSearchBuilder();
-        ListZonesByImplicitFlagTrue.and("zoneId", ListZonesByImplicitFlagTrue.entity().getPodId(), SearchCriteria.Op.NNULL);
-        ListZonesByImplicitFlagTrue.and("implicit", ListZonesByImplicitFlagTrue.entity().getImplicitDedication(), SearchCriteria.Op.EQ);
-        ListZonesByImplicitFlagTrue.done();
-
-        ListPodsByImplicitFlagTrue = createSearchBuilder();
-        ListPodsByImplicitFlagTrue.and("podId", ListPodsByImplicitFlagTrue.entity().getPodId(), SearchCriteria.Op.NNULL);
-        ListPodsByImplicitFlagTrue.and("implicit", ListPodsByImplicitFlagTrue.entity().getImplicitDedication(), SearchCriteria.Op.EQ);
-        ListPodsByImplicitFlagTrue.done();
-
-        ListClustersByImplicitFlagTrue = createSearchBuilder();
-        ListClustersByImplicitFlagTrue.and("clusterId", ListClustersByImplicitFlagTrue.entity().getClusterId(), SearchCriteria.Op.NNULL);
-        ListClustersByImplicitFlagTrue.and("implicit", ListClustersByImplicitFlagTrue.entity().getImplicitDedication(), SearchCriteria.Op.EQ);
-        ListClustersByImplicitFlagTrue.done();
-
-        ListHostsByImplicitFlagTrue = createSearchBuilder();
-        ListHostsByImplicitFlagTrue.and("hostId", ListHostsByImplicitFlagTrue.entity().getHostId(), SearchCriteria.Op.NNULL);
-        ListHostsByImplicitFlagTrue.and("implicit", ListHostsByImplicitFlagTrue.entity().getImplicitDedication(), SearchCriteria.Op.EQ);
-        ListHostsByImplicitFlagTrue.done();
-
     }
 
     @Override
@@ -213,27 +187,6 @@ public class DedicatedResourceDaoImpl extends GenericDaoBase<DedicatedResourceVO
     public List<DedicatedResourceVO> findHostsByAccountId(Long accountId){
         SearchCriteria<DedicatedResourceVO> sc = ListHostsByAccountIdSearch.create();
         sc.setParameters("accountId", accountId);
-        return listBy(sc);
-    }
-
-    @Override
-    public List<DedicatedResourceVO> findPodsByImplicitDedication(Boolean implicit){
-        SearchCriteria<DedicatedResourceVO> sc = ListPodsByImplicitFlagTrue.create();
-        sc.setParameters("implicit", implicit);
-        return listBy(sc);
-    }
-
-    @Override
-    public List<DedicatedResourceVO> findClustersByImplicitDedication(Boolean implicit){
-        SearchCriteria<DedicatedResourceVO> sc = ListClustersByImplicitFlagTrue.create();
-        sc.setParameters("implicit", implicit);
-        return listBy(sc);
-    }
-
-    @Override
-    public List<DedicatedResourceVO> findHostsByImplicitDedication(Boolean implicit){
-        SearchCriteria<DedicatedResourceVO> sc = ListHostsByImplicitFlagTrue.create();
-        sc.setParameters("implicit", implicit);
         return listBy(sc);
     }
 
