@@ -109,6 +109,7 @@ import com.cloud.vm.dao.NicDaoImpl;
 import com.cloud.vm.dao.NicSecondaryIpDaoImpl;
 import com.cloud.vm.dao.UserVmDao;
 import com.cloud.vm.dao.VMInstanceDaoImpl;
+import com.cloud.dc.dao.DedicatedResourceDao;
 
 @Configuration
 @ComponentScan(basePackageClasses={
@@ -156,7 +157,7 @@ import com.cloud.vm.dao.VMInstanceDaoImpl;
         LoadBalancerDaoImpl.class,
         NetworkServiceMapDaoImpl.class,
         PrimaryDataStoreDaoImpl.class,
-        StoragePoolDetailsDaoImpl.class
+        StoragePoolDetailsDaoImpl.class,
     },
 includeFilters={@Filter(value=ChildTestConfiguration.Library.class, type=FilterType.CUSTOM)},
 useDefaultFilters=false
@@ -313,7 +314,12 @@ public class ChildTestConfiguration {
     public NetworkDao networkDao() {
         return Mockito.mock(NetworkDao.class);
     }
-    
+
+    @Bean
+    public DedicatedResourceDao DedicatedResourceDao() {
+        return Mockito.mock(DedicatedResourceDao.class);
+    }
+
     @Bean
     public NetworkOfferingServiceMapDao networkOfferingServiceMapDao() {
         return Mockito.mock(NetworkOfferingServiceMapDao.class);

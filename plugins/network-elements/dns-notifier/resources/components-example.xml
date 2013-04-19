@@ -126,6 +126,9 @@ under the License.
             <adapter name="BareMetal Fit" class="com.cloud.deploy.BareMetalPlanner"/>
             -->
         </adapters>
+        <adapters key="org.apache.cloudstack.affinity.AffinityGroupProcessor">
+            <adapter name="HostAntiAffinity" class="org.apache.cloudstack.affinity.HostAntiAffinityProcessor"/>
+        </adapters>
         <adapters key="com.cloud.alert.AlertAdapter">
             <adapter name="ClusterAlert" class="com.cloud.alert.ClusterAlertAdapter"/>
             <adapter name="ConsoleProxyAlert" class="com.cloud.alert.ConsoleProxyAlertAdapter"/>

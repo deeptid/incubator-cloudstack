@@ -29,7 +29,7 @@
                       http://www.springframework.org/schema/aop
                       http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
                       http://www.springframework.org/schema/context
-                      http://www.springframework.org/schema/context/spring-context-3.0.xsd">                     
+                      http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
 
 <!--
@@ -45,7 +45,6 @@
   
   <bean id="databaseUpgradeChecker" class="com.cloud.upgrade.DatabaseUpgradeChecker" />
   <bean id="configurationDaoImpl" class="com.cloud.configuration.dao.ConfigurationDaoImpl" />
-  
   <bean id="GlobalLoadBalancingRulesServiceImpl" class ="org.apache.cloudstack.region.gslb.GlobalLoadBalancingRulesServiceImpl" />
 
   <!--
@@ -170,7 +169,7 @@
       </list>
     </property>
   </bean>
-  
+
   <bean id="hostAllocators" class="com.cloud.utils.component.AdapterList">
     <property name="Adapters">
       <list>
@@ -262,8 +261,17 @@
     <property name="Adapters">
       <list>
           <ref bean="HostAntiAffinityProcessor" />
+          <ref bean="ExplicitDedicationProcessor"/>
       </list>
     </property>
   </bean>
-  
+
+  <!--
+    Dedicated Resources components
+  -->
+  <bean id="DedicatedResourceManagerImpl" class="org.apache.cloudstack.dedicated.manager.DedicatedResourceManagerImpl"/>
+  <bean id="ExplicitDedicationProcessor" class="org.apache.cloudstack.affinity.ExplicitDedicationProcessor">
+  <property name="name" value="ExplicitDedicationProcessor"/>
+  <property name="type" value="ExplicitDedication"/>
+  </bean>
 </beans>
