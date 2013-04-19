@@ -35,7 +35,6 @@
 	        </list>
 	    </property>
 	  </bean>
-    
 
     <bean id="ConfigurationManager" class="com.cloud.configuration.ConfigurationManagerImpl">
         <property name="name" value="ConfigurationManager"/>
