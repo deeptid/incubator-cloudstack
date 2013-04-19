@@ -2196,12 +2196,15 @@ public class QueryManagerImpl extends ManagerBase implements QueryService {
                 sc.addAnd("name", SearchCriteria.Op.SC, ssc);
             }
 
-            if (domainId != null) {
+            /*List all resources due to Explicit Dedication
+             * if (domainId != null) {
                 // for domainId != null
                 // right now, we made the decision to only list zones associated
                 // with this domain, private zone
                 sc.addAnd("domainId", SearchCriteria.Op.EQ, domainId);
-            }  else if (account.getType() == Account.ACCOUNT_TYPE_NORMAL) {
+            }  else */
+                
+            if (account.getType() == Account.ACCOUNT_TYPE_NORMAL) {
                 // it was decided to return all zones for the user's domain, and
                 // everything above till root
                 // list all zones belonging to this domain, and all of its

@@ -158,7 +158,15 @@
       </map>
     </property>  
   </bean>
-  
+  <bean id="dedicatedResourceDaoImpl" class="com.cloud.dc.dao.DedicatedResourceDaoImpl">
+    <property name="configParams">
+      <map>
+        <entry key="cache.size" value="30" />
+        <entry key="cache.time.to.live" value="3600" />
+      </map>
+    </property>  
+  </bean>  
+
   <!--
     DAOs with default configuration
   -->
