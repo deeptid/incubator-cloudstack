@@ -174,11 +174,25 @@ public interface DeploymentPlanner extends Adapter {
             _podIds.add(podId);
         }
 
+        public void removePod(long podId) {
+            if (_podIds == null) {
+                _podIds = new HashSet<Long>();
+            }
+            _podIds.remove(podId);
+        }
+
         public void addCluster(long clusterId) {
             if (_clusterIds == null) {
                 _clusterIds = new HashSet<Long>();
             }
             _clusterIds.add(clusterId);
+        }
+
+        public void removeCluster(long clusterId) {
+            if (_clusterIds == null) {
+                _clusterIds = new HashSet<Long>();
+            }
+            _clusterIds.remove(clusterId);
         }
 
         public void addClusterList(Collection<Long> clusterList) {
@@ -193,6 +207,13 @@ public interface DeploymentPlanner extends Adapter {
                 _hostIds = new HashSet<Long>();
             }
             _hostIds.add(hostId);
+        }
+
+        public void removeHost(long hostId) {
+            if (_hostIds == null) {
+                _hostIds = new HashSet<Long>();
+            }
+            _hostIds.remove(hostId);
         }
 
         public boolean shouldAvoid(Host host) {

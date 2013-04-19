@@ -136,6 +136,7 @@ public class ApiConstants {
     public static final String NUM_RETRIES = "numretries";
     public static final String OFFER_HA = "offerha";
     public static final String IS_SYSTEM_OFFERING = "issystem";
+    public static final String IS_DEDICATED = "isdedicated";
     public static final String IS_DEFAULT_USE = "defaultuse";
     public static final String OP = "op";
     public static final String OS_CATEGORY_ID = "oscategoryid";
@@ -213,6 +214,7 @@ public class ApiConstants {
     public static final String USAGE_INTERFACE = "usageinterface";
     public static final String USER_DATA = "userdata";
     public static final String USER_ID = "userid";
+    public static final String USE_DEDICATION = "usededication";
     public static final String USE_SSL = "ssl";
     public static final String USERNAME = "username";
     public static final String USER_SECURITY_GROUP_LIST = "usersecuritygrouplist";

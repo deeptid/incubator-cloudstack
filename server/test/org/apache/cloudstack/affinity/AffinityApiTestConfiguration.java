@@ -46,6 +46,7 @@ import com.cloud.dc.dao.DataCenterLinkLocalIpAddressDao;
 import com.cloud.dc.dao.DataCenterLinkLocalIpAddressDaoImpl;
 import com.cloud.dc.dao.DataCenterVnetDaoImpl;
 import com.cloud.dc.dao.DcDetailsDaoImpl;
+import com.cloud.dc.dao.DedicatedResourceDao;
 import com.cloud.dc.dao.HostPodDaoImpl;
 import com.cloud.dc.dao.PodVlanDaoImpl;
 import com.cloud.dc.dao.PodVlanMapDaoImpl;
@@ -330,7 +331,12 @@ public class AffinityApiTestConfiguration {
     public DataCenterLinkLocalIpAddressDao datacenterLinkLocalIpAddressDao() {
     	return Mockito.mock(DataCenterLinkLocalIpAddressDao.class);
     }
-    
+
+    @Bean
+    public DedicatedResourceDao dedicatedResourceDao() {
+        return Mockito.mock(DedicatedResourceDao.class);
+    }
+
     public static class Library implements TypeFilter {
 
         @Override

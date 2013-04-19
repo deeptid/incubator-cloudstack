@@ -89,7 +89,7 @@ public class CloudOrchestrator implements OrchestrationService {
 
 	public CloudOrchestrator() {
 	}
-	
+
     public VirtualMachineEntity createFromScratch(String uuid, String iso, String os, String hypervisor, String hostName, int cpu, int speed, long memory, List<String> networks, List<String> computeTags,
             Map<String, String> details, String owner) {
         // TODO Auto-generated method stub
@@ -214,7 +214,7 @@ public class CloudOrchestrator implements OrchestrationService {
         return vmEntity;
     }
 
-    @Override
+    
     public VirtualMachineEntity createVirtualMachineFromScratch(String id, String owner, String isoId, String hostName, String displayName, String hypervisor, String os, int cpu, int speed, long memory,Long diskSize,
             List<String> computeTags, List<String> rootDiskTags, Map<String, NicProfile> networkNicMap, DeploymentPlan plan)  throws InsufficientCapacityException {
 

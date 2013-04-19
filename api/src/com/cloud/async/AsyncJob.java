@@ -50,7 +50,7 @@ public interface AsyncJob extends Identity, InternalIdentity {
         AutoScaleVmProfile,
         AutoScaleVmGroup,
         GlobalLoadBalancerRule,
-        AffinityGroup
+        AffinityGroup,
     }
 
     long getUserId();
