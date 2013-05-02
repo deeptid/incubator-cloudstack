@@ -18,27 +18,20 @@ package org.apache.cloudstack.affinity;
 
 import java.io.IOException;
 
-import com.cloud.server.ConfigurationServer;
-import com.cloud.user.AccountDetailsDao;
-import com.cloud.user.AccountManager;
-import com.cloud.user.ResourceLimitService;
-import com.cloud.user.UserContextInitializer;
 import org.apache.cloudstack.acl.SecurityChecker;
 import org.apache.cloudstack.affinity.dao.AffinityGroupDao;
 import org.apache.cloudstack.affinity.dao.AffinityGroupVMMapDao;
 import org.apache.cloudstack.storage.datastore.db.PrimaryDataStoreDaoImpl;
-import org.apache.cloudstack.storage.datastore.db.PrimaryDataStoreDao;
-import org.apache.cloudstack.storage.datastore.db.StoragePoolDetailsDao;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
-import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.filter.TypeFilter;
-import com.cloud.utils.component.ComponentContext;
+
 import com.cloud.agent.AgentManager;
 import com.cloud.alert.AlertManager;
 import com.cloud.api.query.dao.UserAccountJoinDaoImpl;
@@ -46,15 +39,14 @@ import com.cloud.capacity.dao.CapacityDaoImpl;
 import com.cloud.cluster.agentlb.dao.HostTransferMapDaoImpl;
 import com.cloud.configuration.dao.ConfigurationDao;
 import com.cloud.dc.ClusterDetailsDao;
-import com.cloud.dc.dao.DcDetailsDao;
 import com.cloud.dc.dao.AccountVlanMapDaoImpl;
 import com.cloud.dc.dao.ClusterDaoImpl;
 import com.cloud.dc.dao.DataCenterDaoImpl;
 import com.cloud.dc.dao.DataCenterIpAddressDaoImpl;
 import com.cloud.dc.dao.DataCenterLinkLocalIpAddressDao;
-import com.cloud.dc.dao.DataCenterLinkLocalIpAddressDaoImpl;
 import com.cloud.dc.dao.DataCenterVnetDaoImpl;
 import com.cloud.dc.dao.DcDetailsDaoImpl;
+import com.cloud.dc.dao.DedicatedResourceDao;
 import com.cloud.dc.dao.HostPodDaoImpl;
 import com.cloud.dc.dao.PodVlanDaoImpl;
 import com.cloud.dc.dao.PodVlanMapDaoImpl;
@@ -62,7 +54,6 @@ import com.cloud.dc.dao.VlanDaoImpl;
 import com.cloud.domain.dao.DomainDaoImpl;
 import com.cloud.event.EventUtils;
 import com.cloud.event.dao.EventDao;
-import com.cloud.event.dao.EventDaoImpl;
 import com.cloud.event.dao.UsageEventDaoImpl;
 import com.cloud.host.dao.HostDaoImpl;
 import com.cloud.host.dao.HostDetailsDaoImpl;
@@ -98,6 +89,7 @@ import com.cloud.network.vpn.RemoteAccessVpnService;
 import com.cloud.offerings.dao.NetworkOfferingDao;
 import com.cloud.offerings.dao.NetworkOfferingServiceMapDao;
 import com.cloud.projects.ProjectManager;
+import com.cloud.server.ConfigurationServer;
 import com.cloud.service.dao.ServiceOfferingDaoImpl;
 import com.cloud.storage.dao.DiskOfferingDaoImpl;
 import com.cloud.storage.dao.S3DaoImpl;
@@ -109,12 +101,14 @@ import com.cloud.storage.s3.S3Manager;
 import com.cloud.storage.secondary.SecondaryStorageVmManager;
 import com.cloud.storage.swift.SwiftManager;
 import com.cloud.tags.dao.ResourceTagsDaoImpl;
+import com.cloud.user.AccountDetailsDao;
+import com.cloud.user.AccountManager;
+import com.cloud.user.ResourceLimitService;
+import com.cloud.user.UserContextInitializer;
 import com.cloud.user.dao.AccountDao;
-import com.cloud.user.dao.AccountDaoImpl;
 import com.cloud.user.dao.UserDaoImpl;
+import com.cloud.utils.component.ComponentContext;
 import com.cloud.utils.component.SpringComponentScanUtils;
-import com.cloud.utils.db.GenericDao;
-import com.cloud.utils.db.GenericDaoBase;
 import com.cloud.vm.UserVmVO;
 import com.cloud.vm.dao.InstanceGroupDaoImpl;
 import com.cloud.vm.dao.NicDaoImpl;
@@ -351,7 +345,10 @@ public class AffinityApiTestConfiguration {
         return Mockito.mock(AccountDetailsDao.class);
     }
 
-    
+    public DedicatedResourceDao dedicatedResourceDao() {
+        return Mockito.mock(DedicatedResourceDao.class);
+    }
+
     public static class Library implements TypeFilter {
 
         @Override

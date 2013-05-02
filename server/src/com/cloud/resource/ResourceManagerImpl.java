@@ -31,6 +31,7 @@ import javax.inject.Inject;
 import javax.naming.ConfigurationException;
 
 import com.cloud.dc.*;
+
 import org.apache.cloudstack.api.ApiConstants;
 import org.apache.cloudstack.api.command.admin.cluster.AddClusterCmd;
 import org.apache.cloudstack.api.command.admin.cluster.DeleteClusterCmd;
@@ -78,6 +79,7 @@ import com.cloud.dc.dao.ClusterDao;
 import com.cloud.dc.dao.ClusterVSMMapDao;
 import com.cloud.dc.dao.DataCenterDao;
 import com.cloud.dc.dao.DataCenterIpAddressDao;
+import com.cloud.dc.dao.DedicatedResourceDao;
 import com.cloud.dc.dao.HostPodDao;
 import com.cloud.exception.AgentUnavailableException;
 import com.cloud.exception.DiscoveryException;
@@ -206,6 +208,8 @@ public class ResourceManagerImpl extends ManagerBase implements ResourceManager,
     protected HighAvailabilityManager        _haMgr;
     @Inject
     protected StorageService                 _storageSvr;
+    @Inject
+    protected DedicatedResourceDao           _dedicatedDao;
 
     protected List<? extends Discoverer> _discoverers;
     public List<? extends Discoverer> getDiscoverers() {
@@ -1006,6 +1010,11 @@ public class ResourceManagerImpl extends ManagerBase implements ResourceManager,
 		hostCapacitySC.addAnd("capacityType", SearchCriteria.Op.IN,
 				capacityTypes);
         _capacityDao.remove(hostCapacitySC);
+        // remove from dedicated resources
+        DedicatedResourceVO dr = _dedicatedDao.findByHostId(hostId);
+        if (dr != null) {
+            _dedicatedDao.remove(dr.getId());
+        }
         txn.commit();
         return true;
     }
@@ -1080,11 +1089,16 @@ public class ResourceManagerImpl extends ManagerBase implements ResourceManager,
 						&& Boolean.parseBoolean(_configDao
 								.getValue(Config.VmwareUseNexusVSwitch
 										.toString()))) {
-                    _clusterVSMMapDao.removeByClusterId(cmd.getId());
-                }
-            }
+				    _clusterVSMMapDao.removeByClusterId(cmd.getId());
+				}
+				// remove from dedicated resources
+				DedicatedResourceVO dr = _dedicatedDao.findByClusterId(cluster.getId());
+				if (dr != null) {
+				    _dedicatedDao.remove(dr.getId());
+				}
+			}
 
-            txn.commit();
+			txn.commit();
             return true;
 		} catch (CloudRuntimeException e) {
             throw e;

@@ -274,5 +274,5 @@ public class DomainDaoImpl extends GenericDaoBase<DomainVO, Long> implements Dom
         
         return parentDomains;
     }
-    
+
 }

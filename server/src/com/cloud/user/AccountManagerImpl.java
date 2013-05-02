@@ -58,7 +58,9 @@ import com.cloud.configuration.ResourceLimit;
 import com.cloud.configuration.dao.ConfigurationDao;
 import com.cloud.configuration.dao.ResourceCountDao;
 import com.cloud.dc.DataCenterVO;
+import com.cloud.dc.DedicatedResourceVO;
 import com.cloud.dc.dao.DataCenterDao;
+import com.cloud.dc.dao.DedicatedResourceDao;
 import com.cloud.domain.Domain;
 import com.cloud.domain.DomainVO;
 import com.cloud.domain.dao.DomainDao;
@@ -222,6 +224,8 @@ public class AccountManagerImpl extends ManagerBase implements AccountManager, M
     @Inject VolumeManager volumeMgr;
     @Inject
     private AffinityGroupDao _affinityGroupDao;
+    @Inject
+    private DedicatedResourceDao _dedicatedDao;
 
     private List<UserAuthenticator> _userAuthenticators;
     List<UserAuthenticator> _userPasswordEncoders;
@@ -699,6 +703,16 @@ public class AccountManagerImpl extends ManagerBase implements AccountManager, M
                 }
             }
 
+            //release dedication if any
+            List<DedicatedResourceVO> dedicatedResources = _dedicatedDao.listByAccountId(accountId);
+            if (dedicatedResources != null && !dedicatedResources.isEmpty()) {
+                s_logger.debug("Releasing dedicated resources for account " + accountId);
+                for (DedicatedResourceVO dr : dedicatedResources){
+                    if (!_dedicatedDao.remove(dr.getId())) {
+                        s_logger.warn("Fail to release dedicated resources for account " + accountId);
+                    }
+                }
+            }
             return true;
         } catch (Exception ex) {
             s_logger.warn("Failed to cleanup account " + account + " due to ", ex);
@@ -1448,6 +1462,16 @@ public class AccountManagerImpl extends ManagerBase implements AccountManager, M
                         try {
                             List<AccountVO> accountsForCleanupInDomain = _accountDao.findCleanupsForRemovedAccounts(domainId);
                             if (accountsForCleanupInDomain.isEmpty()) {
+                                //release dedication if any, before deleting the domain
+                                List<DedicatedResourceVO> dedicatedResources = _dedicatedDao.listByDomainId(domainId);
+                                if (dedicatedResources != null && !dedicatedResources.isEmpty()) {
+                                    s_logger.debug("Releasing dedicated resources for domain" + domainId);
+                                    for (DedicatedResourceVO dr : dedicatedResources){
+                                        if (!_dedicatedDao.remove(dr.getId())) {
+                                            s_logger.warn("Fail to release dedicated resources for domain " + domainId);
+                                        }
+                                    }
+                                }
                                 s_logger.debug("Removing inactive domain id=" + domainId);
                                 _domainMgr.removeDomain(domainId);
                             } else {
